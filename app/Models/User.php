@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable
 {
@@ -22,6 +23,21 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function sede()
+    {
+        return $this->belongsTo(Sede::class);
+    }
+
+    public function incidencias()
+    {
+        return $this->belongsToMany(Incidencia::class, 'incidencia_usuario');
+    }
 
     /**
      * The attributes that should be hidden for serialization.
