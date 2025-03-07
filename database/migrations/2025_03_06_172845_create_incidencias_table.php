@@ -21,7 +21,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users'); 
             $table->foreignId('sede_id')->constrained('sedes'); 
             $table->text('imagen');
-            $table->foreignId('categoria_id')->constrained('categorias'); 
             $table->foreignId('subcategoria_id')->constrained('subcategorias');
             $table->timestamps();
         });
