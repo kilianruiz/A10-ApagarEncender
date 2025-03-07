@@ -20,6 +20,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->foreignId('role_id')->constrained('roles'); // Relación 1 rol N usuarios
             $table->foreignId('sede_id')->constrained('sedes'); // Relación 1 sede N usuarios
+            $table->foreignId('jefe_id')->nullable()->constrained('users'); // Relación 1 jefe N usuarios
             $table->timestamps();
         });
 
