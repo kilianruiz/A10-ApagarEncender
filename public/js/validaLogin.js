@@ -34,7 +34,12 @@ function validaUserName(){
         actualizarEstadoBoton();
         return false;
     } else if(!isNaN(userName)){
-        errorMessage.textContent = "El campo no puede contener números.";
+        errorMessage.textContent = "El campo no puede contener solo números.";
+        inputUserName.classList.add('error-input');
+        actualizarEstadoBoton();
+        return false;
+    } else if(!/^[a-zA-Z0-9\s]*$/.test(userName)){
+        errorMessage.textContent = "El campo no puede contener caracteres especiales.";
         inputUserName.classList.add('error-input');
         actualizarEstadoBoton();
         return false;
