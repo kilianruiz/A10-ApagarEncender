@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('titulo');
             $table->text('descripcion');
+            $table->text('comentario')->nullable();
+            $table->enum('estado', ['sin_asignar', 'asignada', 'en_proceso', 'resuelta', 'cerrada'])->default('sin_asignar'); 
             $table->enum('prioridad', ['alta', 'media', 'baja'])->default('media'); 
             $table->foreignId('user_id')->constrained('users'); 
             $table->foreignId('sede_id')->constrained('sedes'); 
+            $table->text('imagen');
             $table->foreignId('categoria_id')->constrained('categorias'); 
             $table->foreignId('subcategoria_id')->constrained('subcategorias');
             $table->timestamps();
