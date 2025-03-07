@@ -3,19 +3,40 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IncidenciasController;
 use App\Http\Controllers\AdminUserController;
-Route::get('/', function () {
-    return view('index');
-});
-//rutas admin
-Route::get('/admin', [AdminUserController::class, 'index'])->name('crudAdmin.index');
-Route::get('/admin/create', [AdminUserController::class, 'create'])->name('crudAdmin.create');
-Route::post('/admin', [AdminUserController::class, 'store'])->name('crudAdmin.store');
-Route::get('/admin/{id}/edit', [AdminUserController::class, 'edit'])->name('crudAdmin.edit');
-Route::put('/admin/{id}', [AdminUserController::class, 'update'])->name('crudAdmin.update');
-Route::delete('/admin/{id}', [AdminUserController::class, 'destroy'])->name('crudAdmin.destroy');
-Route::resource('admin/users', AdminUserController::class)->except(['show', 'create', 'edit']);
+use App\Http\Controllers\AuthController;
 
-// Ruta incidencias
-Route::get('/incidencias', [IncidenciasController::class, 'index']);
-Route::get('/incidencias/crear', [IncidenciasController::class, 'crear']);
-Route::get('/incidencias/{id}', [IncidenciasController::class, 'ver'])->name('incidencias.ver');
+// Ruta principal
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+// Ruta para mostrar el formulario de login
+Route::get('/login', function () {
+    return view('index');
+})->name('login');
+
+// rutas proceso login 
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// rutas securizadas
+Route::middleware(['auth'])->group(function () {
+    //rutas admin
+    Route::controller(AdminUserController::class)->group(function () {
+        Route::get('/admin', [AdminUserController::class, 'index'])->name('crudAdmin.index');
+        Route::get('/admin/create', [AdminUserController::class, 'create'])->name('crudAdmin.create');
+        Route::post('/admin', [AdminUserController::class, 'store'])->name('crudAdmin.store');
+        Route::get('/admin/{id}/edit', [AdminUserController::class, 'edit'])->name('crudAdmin.edit');
+        Route::put('/admin/{id}', [AdminUserController::class, 'update'])->name('crudAdmin.update');
+        Route::delete('/admin/{id}', [AdminUserController::class, 'destroy'])->name('crudAdmin.destroy');
+        Route::resource('admin/users', AdminUserController::class)->except(['show', 'create', 'edit']);
+    });
+
+    // rutas incidencias
+    Route::controller(IncidenciasController::class)->group(function () {
+        // Ruta incidencias
+        Route::get('/incidencias', [IncidenciasController::class, 'index']);
+        Route::get('/incidencias/crear', [IncidenciasController::class, 'crear']);
+        Route::get('/incidencias/{id}', [IncidenciasController::class, 'ver'])->name('incidencias.ver');
+    });
+});
