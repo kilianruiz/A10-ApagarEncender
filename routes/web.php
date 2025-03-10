@@ -50,6 +50,11 @@ Route::middleware(['auth'])->group(function () {
     //rutas clientes
     Route::controller(ClienteController::class)->group(function () {
         Route::get('/clientes/{id}', [ClienteController::class, 'index'])->name('crudClientes');
+        Route::get('/incidencia/{id}', [ClienteController::class, 'show'])->name('incidencias.show');
+        Route::get('/incidencias', [ClienteController::class, 'getIncidencias'])->name('incidencias.index');
+
     });
 });
+
+
 
