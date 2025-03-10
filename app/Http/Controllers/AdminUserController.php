@@ -7,6 +7,8 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Sede;
+use Illuminate\Support\Facades\DB;
+use App\Models\Incidencia;
 
 class AdminUserController extends Controller
 {
@@ -84,26 +86,61 @@ class AdminUserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
             'role_id' => 'required|exists:roles,id',
+            'sede_id' => 'required|exists:sedes,id',
         ]);
-
-
-
-        $user->update($request->all());
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+    
+        DB::transaction(function () use ($request, $user) {
+            $data = $request->only(['name', 'email', 'role_id', 'sede_id']);
+            if ($request->filled('password')) {
+                $data['password'] = bcrypt($request->password);
+            }
+    
+            $user->update($data);
+        });
+    
         return response()->json(['user' => $user, 'message' => 'Usuario actualizado exitosamente.']);
     }
 
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        $user->delete();
-        return response()->json(['message' => 'Usuario eliminado exitosamente.']);
+        DB::beginTransaction();
+        try {
+            // Encuentra el usuario por su ID
+            $user = User::findOrFail($id);
+
+            // Elimina las incidencias asociadas al usuario
+            Incidencia::where('user_id', $user->id)->delete();
+
+            // Actualiza o elimina registros relacionados
+            // Por ejemplo, establecer jefe_id a null para los usuarios que referencian al usuario que se va a eliminar
+            User::where('jefe_id', $user->id)->update(['jefe_id' => null]);
+
+            // Elimina el usuario
+            $user->delete();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Usuario e incidencias eliminados exitosamente.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Hubo un error al eliminar el usuario o las incidencias: ' . $e->getMessage()], 500);
+        }
     }
-
-    public function edit(Request $request, User $user)
+    public function edit($id)
     {
-        $id = $request->input('id');
-
-        // Buscar el usuario junto con su rol y sede
-        $user = User::find($id);
+        // Buscar el usuario o devolver un error 404 si no existe
+        $user = User::with('role', 'sede')->find($id);
+    
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+    
+        // Retornar los datos del usuario en formato JSON
         return response()->json($user);
     }
+    
 }
