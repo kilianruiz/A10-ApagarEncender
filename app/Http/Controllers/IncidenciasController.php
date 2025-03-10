@@ -12,7 +12,8 @@ class IncidenciasController extends Controller
     // Crud de incidencias del Gestor
     public function index()
     {
-        return view('crudGestor.index');
+        $incidencias = Incidencia::all();
+        return view('crudGestor.index', compact('incidencias'));
     }
 
     // Pagina para asignar incidencias
