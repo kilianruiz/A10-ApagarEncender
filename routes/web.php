@@ -41,6 +41,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/incidencias/crear', [IncidenciasController::class, 'crear']);
         Route::get('/incidencias/{id}', [IncidenciasController::class, 'ver'])->name('incidencias.ver');
     });
+    //ruta clientes
+    Route::controller(ClienteController::class)->group(function () {
+        Route::get('/cliente/{id}', [ClienteController::class, 'index'])->name('crudClientes.index');
+    });
 });
 
-Route::get('/cliente/{userId}/incidencias', [ClienteController::class, 'mostrarIncidencias'])->name('cliente.incidencias');
+// Route::get('/cliente/{userId}', [ClienteController::class, 'mostrarIncidencias'])->name('cliente.incidencias');
