@@ -12,15 +12,15 @@ class SubcategoriaSeeder extends Seeder
     {
         $subcategorias = [
             'Software' => [
-                'Aplicació gestió administrativa',
-                'Accés remot',
-                'Aplicació de videoconferència',
+                'Aplicación de gestión administrativa',
+                'Acceso remot',
+                'Aplicación de videoconferencia',
             ],
             'Hardware' => [
-                'Problema amb el teclat',
-                'El ratolí no funciona',
-                'Monitor no s\'encén',
-                'Imatge de projector defectuosa',
+                'Problemas con el teclado',
+                'El ratón no funciona',
+                'El monitor no se enciende',
+                'Imagen del proyector defectuosa',
             ],
         ];
 
