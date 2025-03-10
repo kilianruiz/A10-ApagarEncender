@@ -38,6 +38,23 @@ class IncidenciasController extends Controller
         return view('crudGestor.index', compact('sin_asignar', 'asignadas', 'resueltas'));
     }
 
+    // En tu controlador
+    public function getByStatus(Request $request)
+    {
+        // Obtiene el estado desde la solicitud
+        $estado = $request->input('estado');
+
+        // Verifica si se pasó un estado válido
+        if (!$estado) {
+            return response()->json(['error' => 'Estado no proporcionado'], 400);
+        }
+
+        // Filtra las incidencias por estado
+        $incidencias = Incidencia::where('estado', $estado)->get();
+
+        // Devuelve las incidencias en formato JSON
+        return response()->json($incidencias);
+    }
 
     // Pagina para asignar incidencias
     // public function crear()
