@@ -26,7 +26,7 @@ class AuthController extends Controller
             } elseif ($user->role_id == 2) {
                 return redirect('/clientes/' . $user->id); // Usar el ID del usuario autenticado
             } elseif ($user->role_id == 3) {
-                return redirect('/..');
+                return redirect('/gestor');
             } elseif ($user->role_id == 4) {
                 return redirect('/tecnicos');
             } else {
