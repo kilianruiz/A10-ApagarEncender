@@ -20,7 +20,7 @@ class IncidenciasSeeder extends Seeder
                 'titulo' => 'Fallo en el sistema de impresión',
                 'descripcion' => 'La impresora no imprime correctamente los documentos.',
                 'comentario' => null,
-                'estado' => 'sin asignar',
+                'estado' => 'asignada',
                 'prioridad' => 'alta',
                 'user_id' => 58, // ID del usuario que reporta la incidencia
                 'sede_id' => 1, // ID de la sede donde ocurre la incidencia
@@ -31,10 +31,10 @@ class IncidenciasSeeder extends Seeder
                 'titulo' => 'Error en el login',
                 'descripcion' => 'Los usuarios no pueden iniciar sesión en el sistema.',
                 'comentario' => 'Se ha intentado reiniciar el servidor sin éxito.',
-                'estado' => 'sin asignar',
+                'estado' => 'asignada',
                 'prioridad' => 'media',
                 'user_id' => 58,
-                'sede_id' => 2,
+                'sede_id' => 1,
                 'imagen' => null,
                 'subcategoria_id' => 5,
                 'feedback' => null
@@ -43,7 +43,7 @@ class IncidenciasSeeder extends Seeder
                 'titulo' => 'Pérdida de conexión a internet',
                 'descripcion' => 'La sede principal ha perdido la conexión a internet.',
                 'comentario' => null,
-                'estado' => 'sin asignar',
+                'estado' => 'asignada',
                 'prioridad' => 'alta',
                 'user_id' => 58,
                 'sede_id' => 1,
@@ -58,7 +58,7 @@ class IncidenciasSeeder extends Seeder
                 'estado' => 'sin asignar',
                 'prioridad' => 'baja',
                 'user_id' => 58,
-                'sede_id' => 3,
+                'sede_id' => 1,
                 'imagen' => null,
                 'subcategoria_id' => 2,
                 'feedback' => null
@@ -70,7 +70,7 @@ class IncidenciasSeeder extends Seeder
                 'estado' => 'sin asignar',
                 'prioridad' => 'media',
                 'user_id' => 58,
-                'sede_id' => 3,
+                'sede_id' => 1,
                 'imagen' => null,
                 'subcategoria_id' => 6,
                 'feedback' => null

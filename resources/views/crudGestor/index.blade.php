@@ -8,45 +8,65 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h1 class="mb-4">Lista de Incidencias</h1>
+    <h1 class="mb-4">Lista de Incidencias de la sede de Barcelona</h1>
 
+    <h2 class="mt-4">Incidencias Sin Asignar</h2>
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Título</th>
                 <th>Descripción</th>
-                <th>Comentario</th>
                 <th>Estado</th>
                 <th>Prioridad</th>
-                <th>Creador</th>
-                <th>Categoria</th>
-                <th>Subcategoria</th>
                 <th>Fecha de creación</th>
-                <th>Última actualización</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($incidencias as $incidencia)
+            @foreach($sin_asignar as $incidencia_sin_asignar)
                 <tr>
-                    <td>{{ $incidencia->id }}</td>
-                    <td>{{ $incidencia->titulo }}</td>
-                    <td>{{ $incidencia->descripcion }}</td>
-                    <td>{{ $incidencia->comentario }}</td>
-                    <td>{{ $incidencia->estado }}</td>
-                    <td>{{ $incidencia->prioridad }}</td>
-                    <td>{{ $incidencia->user_id }}</td>
-                    <td>{{ $incidencia->subcategoria_id }}</td>
-                    <td>{{ $incidencia->created_at }}</td>
-                    <td>{{ $incidencia->updated_at }}</td>
+                    <td>{{ $incidencia_sin_asignar->id }}</td>
+                    <td>{{ $incidencia_sin_asignar->titulo }}</td>
+                    <td>{{ $incidencia_sin_asignar->descripcion }}</td>
+                    <td>{{ $incidencia_sin_asignar->estado }}</td>
+                    <td>{{ $incidencia_sin_asignar->prioridad }}</td>
+                    <td>{{ $incidencia_sin_asignar->created_at }}</td>
                     {{-- <td>
+                        <a href="{{ route('incidencias.ver', $incidencia->id) }}" class="btn btn-info btn-sm">Ver</a>
                         <a href="{{ route('incidencias.edit', $incidencia->id) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <form action="{{ route('incidencias.destroy', $incidencia->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro?')">Eliminar</button>
-                        </form>
+                    </td> --}}
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    {{-- Tabla de Incidencias Asignadas --}}
+    <h2 class="mt-4">Incidencias Asignadas</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>Fecha de creación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($asignadas as $incidencia_asignada)
+                <tr>
+                    <td>{{ $incidencia_asignada->id }}</td>
+                    <td>{{ $incidencia_asignada->titulo }}</td>
+                    <td>{{ $incidencia_asignada->descripcion }}</td>
+                    <td>{{ $incidencia_asignada->estado }}</td>
+                    <td>{{ $incidencia_asignada->prioridad }}</td>
+                    <td>{{ $incidencia_asignada->created_at }}</td>
+                    {{-- <td>
+                        <a href="{{ route('incidencias.ver', $incidencia->id) }}" class="btn btn-info btn-sm">Ver</a>
+                        <a href="{{ route('incidencias.edit', $incidencia->id) }}" class="btn btn-warning btn-sm">Editar</a>
                     </td> --}}
                 </tr>
             @endforeach
