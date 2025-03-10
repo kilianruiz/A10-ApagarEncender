@@ -33,6 +33,11 @@ class AdminUserController extends Controller
                 $query->where('role_id', $request->role_id);
             }
 
+            // Filtrar por sede si se proporciona
+            if ($request->has('sede_id') && $request->sede_id != '') {
+                $query->where('sede_id', $request->sede_id);
+            }
+
             // Ordenar por columna y orden si se proporcionan
             if ($request->has('sort_column') && $request->has('sort_order')) {
                 $column = $request->sort_column;
@@ -46,16 +51,22 @@ class AdminUserController extends Controller
                 }
             }
 
-            // Obtener los usuarios
-            $usuarios = $query->get();
-            $roles = Role::all();
-            $sedes = Sede::all();
+            // Obtener los usuarios con paginación
+            $usuarios = $query->paginate(10); // Cambia 10 por el número de usuarios por página que desees
 
             return response()->json([
                 'success' => true,
-                'usuarios' => $usuarios,
-                'roles' => $roles,
-                'sedes' => $sedes
+                'usuarios' => $usuarios->items(),
+                'roles' => Role::all(),
+                'sedes' => Sede::all(),
+                'pagination' => [
+                    'total' => $usuarios->total(),
+                    'current_page' => $usuarios->currentPage(),
+                    'per_page' => $usuarios->perPage(),
+                    'last_page' => $usuarios->lastPage(),
+                    'from' => $usuarios->firstItem(),
+                    'to' => $usuarios->lastItem()
+                ]
             ]);
         }
 

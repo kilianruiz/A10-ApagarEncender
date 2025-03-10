@@ -3,7 +3,23 @@
 @section('content')
 <div class="container">
     <h1>Gestión de Usuarios</h1>
-    <input type="text" id="filter" placeholder="Buscar usuarios..." class="form-control mb-3">
+    <div class="mb-3">
+        <input type="text" id="filter" placeholder="Buscar usuarios por nombre..." class="form-control mb-2">
+        <input type="text" id="filterEmail" placeholder="Buscar usuarios por email..." class="form-control mb-2">
+        <select id="filterRole" class="form-control mb-2">
+            <option value="">Filtrar por rol</option>
+            @foreach($roles as $role)
+                <option value="{{ $role->id }}">{{ $role->nombre }}</option>
+            @endforeach
+        </select>
+        <select id="filterSede" class="form-control mb-2">
+            <option value="">Filtrar por sede</option>
+            @foreach($sedes as $sede)
+                <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
+            @endforeach
+        </select>
+        <button id="clearFilters" class="btn btn-secondary mb-3">Limpiar Filtros</button>
+    </div>
     <button id="openUserModal" class="btn btn-primary mb-3">Crear Usuario</button>
     <table class="table">
         <thead>
@@ -19,6 +35,8 @@
             <!-- Los usuarios se cargarán aquí mediante AJAX -->
         </tbody>
     </table>
+    <!-- Contenedor para los controles de paginación -->
+    <div id="paginationControls" class="mt-3"></div>
 </div>
 
 <!-- Modal para crear usuario -->
@@ -128,19 +146,15 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
-    // Inicializar la lista de productos al cargar la página
-    ListarProductos();
-
-    // Escuchar el evento keyup para el filtro de búsqueda
-    $('#filter').on('keyup', function() {
-        const valor = $(this).val();
-        ListarProductos(valor);
-    });
-
-    // Función para listar productos
-    function ListarProductos(filtro = '') {
+    // Definir la función ListarProductos en el ámbito global
+    window.ListarProductos = function(page = 1) {
+        const nombre = $('#filter').val();
+        const email = $('#filterEmail').val();
+        const role_id = $('#filterRole').val();
+        const sede_id = $('#filterSede').val();
         const resultado = document.getElementById('userTable');
-        fetch(`/admin/users?nombre=${encodeURIComponent(filtro)}`, {
+
+        fetch(`/admin/users?nombre=${encodeURIComponent(nombre)}&email=${encodeURIComponent(email)}&role_id=${role_id}&sede_id=${sede_id}&page=${page}`, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -157,17 +171,67 @@ $(document).ready(function() {
                     str += `<td>${user.role ? user.role.nombre : 'Sin rol'}</td>`;
                     str += `<td>${user.sede ? user.sede.nombre : 'Sin sede'}</td>`;
                     str += `<td>`;
-                    str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})">Editar</button>`;
+                    if (user.role_id !== 1) { // Suponiendo que el rol de administrador tiene el ID 1
+                        str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})">Editar</button>`;
+                    } else {
+                        str += `<button type='button' class='btn btn-success' disabled>Editar</button>`;
+                    }
                     str += `<button type='button' class='btn btn-danger' onclick="Eliminar(${user.id})">Eliminar</button>`;
                     str += `</td></tr>`;
                     tabla += str;
                 });
                 resultado.innerHTML = tabla;
+
+                // Generar elementos de paginación
+                let pagination = '<nav aria-label="Page navigation example"><ul class="pagination">';
+                if (data.pagination.current_page > 1) {
+                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page - 1})">Previous</a></li>`;
+                }
+                for (let i = 1; i <= data.pagination.last_page; i++) {
+                    pagination += `<li class="page-item ${i === data.pagination.current_page ? 'active' : ''}"><a class="page-link" href="#" onclick="ListarProductos(${i})">${i}</a></li>`;
+                }
+                if (data.pagination.current_page < data.pagination.last_page) {
+                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page + 1})">Next</a></li>`;
+                }
+                pagination += '</ul></nav>';
+                document.getElementById('paginationControls').innerHTML = pagination;
             } else {
                 resultado.innerHTML = '<tr><td colspan="5">No se encontraron usuarios.</td></tr>';
             }
         })
-    }
+    };
+
+    // Inicializar la lista de productos al cargar la página
+    ListarProductos();
+
+    // Escuchar el evento keyup para el filtro de búsqueda por nombre
+    $('#filter').on('keyup', function() {
+        ListarProductos();
+    });
+
+    // Escuchar el evento keyup para el filtro de búsqueda por email
+    $('#filterEmail').on('keyup', function() {
+        ListarProductos();
+    });
+
+    // Escuchar el cambio en el filtro de rol
+    $('#filterRole').on('change', function() {
+        ListarProductos();
+    });
+
+    // Escuchar el cambio en el filtro de sede
+    $('#filterSede').on('change', function() {
+        ListarProductos();
+    });
+
+    // Función para limpiar filtros
+    $('#clearFilters').click(function() {
+        $('#filter').val('');
+        $('#filterEmail').val('');
+        $('#filterRole').val('');
+        $('#filterSede').val('');
+        ListarProductos();
+    });
 
     // Función para abrir el modal de creación de usuario
     $('#openUserModal').click(function() {
@@ -224,7 +288,7 @@ $(document).ready(function() {
                     timer: 1500
                 });
                 $('#createUserModal').modal('hide');
-                ListarProductos('');
+                ListarProductos();
             }
         })
     });
@@ -265,7 +329,7 @@ $(document).ready(function() {
                 timer: 1500
             });
             $('#editUserModal').modal('hide');
-            ListarProductos('');
+            ListarProductos();
         }
     })
     .catch(error => {
@@ -301,7 +365,7 @@ $(document).ready(function() {
                             showConfirmButton: false,
                             timer: 1100
                         });
-                        ListarProductos('');
+                        ListarProductos();
                     }
                 })
                 .catch(error => {
