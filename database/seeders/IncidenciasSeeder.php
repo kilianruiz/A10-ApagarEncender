@@ -74,6 +74,18 @@ class IncidenciasSeeder extends Seeder
                 'imagen' => null,
                 'subcategoria_id' => 6,
                 'feedback' => null
+            ],
+            [
+                'titulo' => 'prueba resuelta',
+                'descripcion' => 'prueba resuelta',
+                'comentario' => null,
+                'estado' => 'resuelta',
+                'prioridad' => 'media',
+                'user_id' => 58,
+                'sede_id' => 1,
+                'imagen' => null,
+                'subcategoria_id' => 6,
+                'feedback' => null
             ]
         ];
 

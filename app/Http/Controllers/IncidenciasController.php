@@ -18,19 +18,24 @@ class IncidenciasController extends Controller
         // Si el usuario es admin (sede_id null), mostrar todas las incidencias
         if ($user->sede_id === null) {
             $sin_asignar = Incidencia::where('estado', 'sin asignar')->get();
-            $asignadas = Incidencia::whereIn('estado', ['asignada', 'en proceso', 'resuelta'])->get();
+            $asignadas = Incidencia::whereIn('estado', ['asignada', 'en proceso'])->get();
+            $resueltas = Incidencia::whereIn('estado', 'resuelta')->get();
         } else {
             // Si el usuario pertenece a una sede específica, filtrar por su sede_id
             $sin_asignar = Incidencia::where('estado', 'sin asignar')
                                     ->where('sede_id', $user->sede_id)
                                     ->get();
 
-            $asignadas = Incidencia::whereIn('estado', ['asignada', 'en proceso', 'resuelta'])
+            $asignadas = Incidencia::whereIn('estado', ['asignada', 'en proceso'])
+                                    ->where('sede_id', $user->sede_id)
+                                    ->get();
+            
+            $resueltas = Incidencia::where('estado', 'resuelta')
                                     ->where('sede_id', $user->sede_id)
                                     ->get();
         }
 
-        return view('crudGestor.index', compact('sin_asignar', 'asignadas'));
+        return view('crudGestor.index', compact('sin_asignar', 'asignadas', 'resueltas'));
     }
 
 
