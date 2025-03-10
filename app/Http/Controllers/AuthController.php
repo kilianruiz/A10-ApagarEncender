@@ -19,20 +19,21 @@ class AuthController extends Controller
         if (Auth::attempt(['name' => $request->nombre_usuario, 'password' => $request->pwd])) {
             // Si las credenciales son válidas, regenera la sesión para protegerla contra ataques
             $request->session()->regenerate();
-
+        
             $user = Auth::user(); // Obtener el usuario autenticado
             if ($user->role_id == 1) {
                 return redirect('/crudAdmin');
-            } elseif($user->role_id == 2) {
-                return redirect('/clientes');
-            } elseif($user->role_id == 3) {
-                return redirect('/crudGestor');
-            } elseif($user->role_id == 4){
+            } elseif ($user->role_id == 2) {
+                return redirect('/clientes/' . $user->id); // Usar el ID del usuario autenticado
+            } elseif ($user->role_id == 3) {
+                return redirect('/..');
+            } elseif ($user->role_id == 4) {
                 return redirect('/tecnicos');
             } else {
                 return redirect('/error-autenticacion');
             }
         }
+        
 
         // Si la autenticación falla, retornar con error
         return back()->withErrors(['nombre_usuario' => 'Las credenciales no son correctas']);
