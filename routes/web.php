@@ -44,6 +44,6 @@ Route::middleware(['auth'])->group(function () {
 
     //rutas tecnicos
     Route::controller(TecnicoController::class)->group(function () {
-        Route::get('/tecnicos', [TecnicoController::class, 'index'])->name('crudTecnico.index');
+        Route::get('/tecnicos', [TecnicoController::class, 'index'])->name('crudTecnico');
     });
 });

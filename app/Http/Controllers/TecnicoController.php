@@ -9,7 +9,6 @@ use App\Models\User;
 class TecnicoController extends Controller
 {
     public function index(){
-        $tecnicos = User::where('rol', 'tecnico')->get();
-        return view('crudTecnico.index', compact('tecnicos'));
+        return view('/crudTecnico.index');
     }
 }
