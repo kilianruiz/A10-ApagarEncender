@@ -24,7 +24,7 @@ class AuthController extends Controller
             if ($user->role_id == 1) {
                 return redirect('/crudAdmin');
             } elseif($user->role_id == 2) {
-                return redirect('/incidencias');
+                return redirect('/clientes');
             } elseif($user->role_id == 3) {
                 return redirect('/..');
             } elseif($user->role_id == 4){

@@ -5,6 +5,7 @@ use App\Http\Controllers\IncidenciasController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TecnicoController;
+use App\Http\Controllers\ClienteController;
 
 // Ruta principal
 Route::get('/', function () {
@@ -45,6 +46,10 @@ Route::middleware(['auth'])->group(function () {
     //rutas tecnicos
     Route::controller(TecnicoController::class)->group(function () {
         Route::get('/tecnicos', [TecnicoController::class, 'index'])->name('crudTecnico');
+    });
+    //rutas clientes
+    Route::controller(ClienteController::class)->group(function () {
+        Route::get('/clientes', [ClienteController::class, 'index'])->name('crudClientes');
     });
 });
 
