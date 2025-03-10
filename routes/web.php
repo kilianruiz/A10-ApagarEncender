@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IncidenciasController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ClienteController;
-
+use App\Http\Controllers\TecnicoController;
 
 // Ruta principal
 Route::get('/', function () {
@@ -40,10 +39,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/incidencias', [IncidenciasController::class, 'index']);
         Route::get('/incidencias/crear', [IncidenciasController::class, 'crear']);
         Route::get('/incidencias/{id}', [IncidenciasController::class, 'ver'])->name('incidencias.ver');
+    
     });
-    //ruta clientes
-    Route::controller(ClienteController::class)->group(function () {
-        Route::get('/cliente/{id}', [ClienteController::class, 'index'])->name('crudClientes.index');
+
+    //rutas tecnicos
+    Route::controller(TecnicoController::class)->group(function () {
+        Route::get('/tecnicos', [TecnicoController::class, 'index'])->name('crudTecnico');
     });
 });
 

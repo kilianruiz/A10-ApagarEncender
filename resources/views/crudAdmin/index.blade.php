@@ -80,7 +80,7 @@
 <script>
 $(document).ready(function() {
     // Inicializar la lista de productos al cargar la página
-    ListarProductos('');
+    ListarProductos();
 
     // Escuchar el evento keyup para el filtro de búsqueda
     $('#filter').on('keyup', function() {
@@ -89,11 +89,8 @@ $(document).ready(function() {
     });
 
     // Función para listar productos
-    function ListarProductos(valor) {
+    function ListarProductos() {
         const resultado = document.getElementById('userTable');
-        const formdata = new FormData();
-        formdata.append('busqueda', valor);
-
         fetch('/admin/users', {
             method: 'GET',
             headers: {
@@ -102,23 +99,28 @@ $(document).ready(function() {
         })
         .then(response => response.json())
         .then(data => {
-            let tabla = '';
-            data.users.forEach(user => {
-                let str = `<tr><td>${user.name}</td>`;
-                str += `<td>${user.email}</td>`;
-                str += `<td>${user.role ? user.role.nombre : 'Sin rol'}</td>`;
-                str += `<td>${user.sede ? user.sede.nombre : 'Sin sede'}</td>`;
-                str += `<td>`;
-                str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})">Editar</button>`;
-                str += `<button type='button' class='btn btn-danger' onclick="Eliminar(${user.id})">Eliminar</button>`;
-                str += `</td></tr>`;
-                tabla += str;
-            });
-            resultado.innerHTML = tabla;
+            console.log(data); // Verifica los datos recibidos
+            if (data.usuarios && Array.isArray(data.usuarios)) {
+                let tabla = '';
+                data.usuarios.forEach(user => {
+                    let str = `<tr><td>${user.name}</td>`;
+                    str += `<td>${user.email}</td>`;
+                    str += `<td>${user.role ? user.role.nombre : 'Sin rol'}</td>`;
+                    str += `<td>${user.sede ? user.sede.nombre : 'Sin sede'}</td>`;
+                    str += `<td>`;
+                    str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})">Editar</button>`;
+                    str += `<button type='button' class='btn btn-danger' onclick="Eliminar(${user.id})">Eliminar</button>`;
+                    str += `</td></tr>`;
+                    tabla += str;
+                });
+                resultado.innerHTML = tabla;
+            } else {
+                resultado.innerHTML = '<tr><td colspan="5">No se encontraron usuarios.</td></tr>';
+            }
         })
         .catch(error => {
-            resultado.innerText = 'Error';
-            console.error('Error:', error);
+            console.error('Error al obtener los usuarios:', error);
+            resultado.innerHTML = '<tr><td colspan="5">Error al cargar los usuarios.</td></tr>';
         });
     }
 
@@ -149,9 +151,6 @@ $(document).ready(function() {
                 ListarProductos('');
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-        });
     });
 
     // Función para editar un usuario
@@ -171,9 +170,6 @@ $(document).ready(function() {
             $('#sede_id').val(json.sede_id);
             $('#userModal').modal('show');
         })
-        .catch(error => {
-            console.error('Error:', error);
-        });
     }
 
     // Función para eliminar un usuario
@@ -207,9 +203,6 @@ $(document).ready(function() {
                         });
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
             }
         });
     }
@@ -218,7 +211,7 @@ $(document).ready(function() {
         $('#userForm')[0].reset();
         $('#userId').val('');
         $('#userModal').modal('show');
-    });
+    });  
 });
 </script>
 @endsection

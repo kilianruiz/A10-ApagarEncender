@@ -15,19 +15,22 @@ class AuthController extends Controller
             'pwd' => 'required',
         ]);
 
-        // Usar 'name' en lugar de 'nombre_usuario' para la autenticación
+        // Intentar autenticar al usuario con las credenciales proporcionadas
         if (Auth::attempt(['name' => $request->nombre_usuario, 'password' => $request->pwd])) {
             // Si las credenciales son válidas, regenera la sesión para protegerla contra ataques
             $request->session()->regenerate();
 
             $user = Auth::user(); // Obtener el usuario autenticado
-
             if ($user->role_id == 1) {
-                return redirect()->route('crudAdmin.index');
+                return redirect('/crudAdmin');
             } elseif($user->role_id == 2) {
                 return redirect('/incidencias');
+            } elseif($user->role_id == 3) {
+                return redirect('/..');
+            } elseif($user->role_id == 4){
+                return redirect('/tecnicos');
             } else {
-                return redirect()->back()->with('error', 'Rol no válido');
+                return redirect('/error-autenticacion');
             }
         }
 
@@ -44,7 +47,7 @@ class AuthController extends Controller
         // Generar un nuevo token para prevenir ataques
         $request->session()->regenerateToken();
         // Redirigir al login
-        return redirect()->route('login');
+        return redirect('/index');
     }
 }
 
