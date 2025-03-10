@@ -11,15 +11,18 @@ class UserSeeder extends Seeder
     public function run()
     {
         $users = [
-            // Usuarios Sede Central (Barcelona)
+
             [
-                'name' => 'AdminBCN',
-                'email' => 'admin@fje.bcn',
+                'name' => 'Admin',
+                'email' => 'admin@fje.edu',
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 1, // Admin
-                'sede_id' => 1, // Barcelona
+                'sede_id' => null, // Todas
                 'jefe_id' => null
             ],
+
+            // Usuarios Sede Central (Barcelona)
+            
             [
                 'name' => 'GestorBCN',
                 'email' => 'gestor@fje.bcn',
@@ -176,14 +179,6 @@ class UserSeeder extends Seeder
             // Usuarios Sede Este (Berlín)
 
             [
-                'name' => 'AdminBL',
-                'email' => 'admin@fje.bl',
-                'password' => Hash::make('QWEqwe123@'),
-                'role_id' => 1, // Admin
-                'sede_id' => 2, // Berlín
-                'jefe_id' => null
-            ],
-            [
                 'name' => 'GestorBL',
                 'email' => 'gestor@fje.bl',
                 'password' => Hash::make('QWEqwe123@'),
@@ -339,14 +334,6 @@ class UserSeeder extends Seeder
             // Usuarios Sede Oeste (Montreal)
 
             [
-                'name' => 'AdminMT',
-                'email' => 'admin@fje.mt',
-                'password' => Hash::make('QWEqwe123@'),
-                'role_id' => 1, // Admin
-                'sede_id' => 3, // Montreal
-                'jefe_id' => null
-            ],
-            [
                 'name' => 'GestorMT',
                 'email' => 'gestor@fje.mt',
                 'password' => Hash::make('QWEqwe123@'),
@@ -360,7 +347,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 4, // Tecnico
                 'sede_id' => 3, // Montreal
-                'jefe_id' => 42
+                'jefe_id' => 40
             ],
             [
                 'name' => 'Tecnico2MT',
@@ -368,7 +355,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 4, // Tecnico
                 'sede_id' => 3, // Montreal
-                'jefe_id' => 42
+                'jefe_id' => 40
             ],
             [
                 'name' => 'Tecnico3MT',
@@ -376,7 +363,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 4, // Tecnico
                 'sede_id' => 3, // Montreal
-                'jefe_id' => 42
+                'jefe_id' => 40
             ],
             [
                 'name' => 'Tecnico4MT',
@@ -384,7 +371,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 4, // Tecnico
                 'sede_id' => 3, // Montreal
-                'jefe_id' => 42
+                'jefe_id' => 40
             ],
             [
                 'name' => 'Tecnico5MT',
@@ -392,7 +379,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 4, // Tecnico
                 'sede_id' => 3, // Montreal
-                'jefe_id' => 42
+                'jefe_id' => 40
             ],
             [
                 'name' => 'Tecnico6MT',
@@ -400,7 +387,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 4, // Tecnico
                 'sede_id' => 3, // Montreal
-                'jefe_id' => 42
+                'jefe_id' => 40
             ],
             [
                 'name' => 'Tecnico7MT',
@@ -408,7 +395,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 4, // Tecnico
                 'sede_id' => 3, // Montreal
-                'jefe_id' => 42
+                'jefe_id' => 40
             ],
             [
                 'name' => 'Tecnico8MT',
@@ -416,7 +403,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 4, // Tecnico
                 'sede_id' => 3, // Montreal
-                'jefe_id' => 42
+                'jefe_id' => 40
             ],
             [
                 'name' => 'Tecnico9MT',
@@ -424,7 +411,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('QWEqwe123@'),
                 'role_id' => 4, // Tecnico
                 'sede_id' => 3, // Montreal
-                'jefe_id' => 42
+                'jefe_id' => 40
             ],
             [
                 'name' => 'Cliente1MT',
