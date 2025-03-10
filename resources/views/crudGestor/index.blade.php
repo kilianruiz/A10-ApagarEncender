@@ -14,13 +14,13 @@
     <!-- Pestañas -->
     <ul class="nav nav-tabs" id="incidenciasTabs" role="tablist">
         <li class="nav-item">
-            <button class="nav-link active" data-status="sin asignar" data-bs-toggle="tab" data-bs-target="#sinAsignar" type="button">Sin Asignar</button>
+            <button class="nav-link active" data-status="sin_asignar" data-bs-toggle="tab" data-bs-target="#sinAsignar" type="button">Sin Asignar</button>
         </li>
         <li class="nav-item">
             <button class="nav-link" data-status="asignadas" data-bs-toggle="tab" data-bs-target="#asignadas" type="button">Asignadas</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-status="en proceso" data-bs-toggle="tab" data-bs-target="#enProceso" type="button">En Proceso</button>
+            <button class="nav-link" data-status="en_proceso" data-bs-toggle="tab" data-bs-target="#enProceso" type="button">En Proceso</button>
         </li>
         <li class="nav-item">
             <button class="nav-link" data-status="resueltas" data-bs-toggle="tab" data-bs-target="#resueltas" type="button">Resueltas</button>
@@ -44,10 +44,10 @@
                         <th>Fecha de creación</th>
                     </tr>
                 </thead>
-                <tbody id="tabla-sinAsignar"></tbody>
+                <tbody id="tabla-sin_asignar"></tbody>
             </table>
         </div>
-        <div class="tab-pane fade" id="asignadas" role="tabpanel">
+        <div class="tab-pane fade" id="asignada" role="tabpanel">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -59,7 +59,7 @@
                         <th>Fecha de creación</th>
                     </tr>
                 </thead>
-                <tbody id="tabla-asignadas"></tbody>
+                <tbody id="tabla-asignada"></tbody>
             </table>
         </div>
         <div class="tab-pane fade" id="enProceso" role="tabpanel">
@@ -74,7 +74,7 @@
                         <th>Fecha de creación</th>
                     </tr>
                 </thead>
-                <tbody id="tabla-enProceso"></tbody>
+                <tbody id="tabla-en_proceso"></tbody>
             </table>
         </div>
         <div class="tab-pane fade" id="resueltas" role="tabpanel">
@@ -89,7 +89,7 @@
                         <th>Fecha de creación</th>
                     </tr>
                 </thead>
-                <tbody id="tabla-resueltas"></tbody>
+                <tbody id="tabla-resuelta"></tbody>
             </table>
         </div>
         <div class="tab-pane fade" id="cerradas" role="tabpanel">
@@ -104,64 +104,64 @@
                         <th>Fecha de creación</th>
                     </tr>
                 </thead>
-                <tbody id="tabla-cerradas"></tbody>
+                <tbody id="tabla-cerrada"></tbody>
             </table>
         </div>
     </div>
 </div>
 
 <script>
-    $(document).ready(function () {
-        // Cargar incidencias según el estado
+    document.addEventListener("DOMContentLoaded", function () {
         function cargarIncidencias(estado) {
-            $.ajax({
-                url: "/gestor/incidencias",  // Verifica que esta URL sea la correcta
-                type: "GET",
-                data: { estado: estado },
-                success: function (data) {
-                    console.log("Datos recibidos para el estado: " + estado);
-                    console.log(data);  // Mostrar los datos recibidos para depuración
-                
-                    let estadoNormalizado = estado.replace(/\s/g, "");  // Normaliza el estado
-                    let tabla = $("#tabla-" + estadoNormalizado);
-                
-                    // Limpiar la tabla
-                    tabla.empty();
-                
-                    // Verificar si hay datos
-                    if (data.length === 0) {
-                        tabla.append("<tr><td colspan='6'>No se encontraron incidencias para este estado.</td></tr>");
+            let estadoNormalizado = estado.replace(/\s/g, "_"); // Normaliza el estado
+            let url = `/api/incidencias?estado=${estadoNormalizado}`; // Ruta corregida
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Error en la respuesta del servidor");
                     }
-                
-                    // Agregar las filas de la tabla
-                    data.forEach(function (incidencia) {
-                        tabla.append(`
-                            <tr>
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`Datos recibidos para el estado: ${estado}`, data);
+                    
+                    let tabla = document.getElementById(`tabla-${estado.replace(/\s/g, "")}`);
+                    tabla.innerHTML = ""; // Limpiar tabla
+
+                    if (data.length === 0) {
+                        tabla.innerHTML = "<tr><td colspan='6'>No hay incidencias en este estado.</td></tr>";
+                    } else {
+                        data.forEach(incidencia => {
+                            let fila = document.createElement("tr");
+                            fila.innerHTML = `
                                 <td>${incidencia.id}</td>
                                 <td>${incidencia.titulo}</td>
                                 <td>${incidencia.descripcion}</td>
                                 <td>${incidencia.estado}</td>
                                 <td>${incidencia.prioridad}</td>
                                 <td>${incidencia.created_at}</td>
-                            </tr>
-                        `);
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error al obtener incidencias: " + error);
-                    console.log(xhr.responseText);  // Ver la respuesta completa para depurar.
-                }
-            });
+                            `;
+                            tabla.appendChild(fila);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al obtener incidencias:", error);
+                });
         }
 
         // Cargar incidencias al cambiar de pestaña
-        $(".nav-link").on("shown.bs.tab", function (e) {
-            let estado = $(e.target).data("status");  // Obtener el estado de la pestaña seleccionada
-            cargarIncidencias(estado);  // Cargar las incidencias correspondientes
+        document.querySelectorAll(".nav-link").forEach(tab => {
+            tab.addEventListener("shown.bs.tab", function (event) {
+                let estado = event.target.getAttribute("data-status");
+                cargarIncidencias(estado);
+            });
         });
 
-        // Cargar la primera pestaña al cargar la página
-        cargarIncidencias("sin asignar");
+        // Cargar la primera pestaña al inicio
+        let estadoInicial = document.querySelector(".nav-link.active").getAttribute("data-status");
+        cargarIncidencias(estadoInicial);
     });
 </script>
 

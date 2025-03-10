@@ -41,18 +41,14 @@ class IncidenciasController extends Controller
     // En tu controlador
     public function getByStatus(Request $request)
     {
-        // Obtiene el estado desde la solicitud
-        $estado = $request->input('estado');
+        $estado = str_replace("_", " ", $request->input('estado')); // Reemplazar "_" por espacios
 
-        // Verifica si se pasó un estado válido
         if (!$estado) {
             return response()->json(['error' => 'Estado no proporcionado'], 400);
         }
 
-        // Filtra las incidencias por estado
         $incidencias = Incidencia::where('estado', $estado)->get();
 
-        // Devuelve las incidencias en formato JSON
         return response()->json($incidencias);
     }
 
