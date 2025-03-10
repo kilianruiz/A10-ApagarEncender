@@ -39,5 +39,13 @@ class IncidenciasUsuariosSeeder extends Seeder
             'incidencia_id' => 3,
         ]);
 
+        IncidenciaUsuario::create([
+            'titulo' => 'Comentario sobre pérdida de internet',
+            'comentario' => 'El proveedor de internet está trabajando en la restauración del servicio.',
+            'imagen' => 'internet_proveedor.jpg',
+            'user_id' => 41, // Tecnico Montreal
+            'incidencia_id' => 6,
+        ]);
+
     }
 }
