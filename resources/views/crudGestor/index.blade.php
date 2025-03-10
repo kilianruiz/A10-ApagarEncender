@@ -19,7 +19,13 @@
             <button class="nav-link" id="asignadas-tab" data-bs-toggle="tab" data-bs-target="#asignadas" type="button" role="tab">Asignadas</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico" type="button" role="tab">Historial</button>
+            <button class="nav-link" id="enProceso-tab" data-bs-toggle="tab" data-bs-target="#enProceso" type="button" role="tab">En Proceso</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="resueltas-tab" data-bs-toggle="tab" data-bs-target="#resueltas" type="button" role="tab">Resueltas</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cerradas-tab" data-bs-toggle="tab" data-bs-target="#cerradas" type="button" role="tab">Cerradas</button>
         </li>
     </ul>
 
@@ -91,7 +97,7 @@
             </table>
         </div>
 
-        <div class="tab-pane fade" id="historico" role="tabpanel">
+        <div class="tab-pane fade" id="resueltas" role="tabpanel">
             <table class="table table-striped">
                 <thead>
                     <tr>
