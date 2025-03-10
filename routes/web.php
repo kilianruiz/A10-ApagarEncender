@@ -37,7 +37,7 @@ Route::middleware(['auth'])->group(function () {
     // rutas incidencias
     Route::controller(IncidenciasController::class)->group(function () {
         // Ruta incidencias
-        Route::get('/incidencias', [IncidenciasController::class, 'index']);
+        Route::get('/gestor', [IncidenciasController::class, 'index']);
         Route::get('/incidencias/crear', [IncidenciasController::class, 'crear']);
         Route::get('/incidencias/{id}', [IncidenciasController::class, 'ver'])->name('incidencias.ver');
     
