@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('prioridad', ['alta', 'media', 'baja'])->default('media'); 
             $table->foreignId('user_id')->constrained('users'); 
             $table->foreignId('sede_id')->constrained('sedes'); 
-            $table->text('imagen');
+            $table->text('imagen')->nullable();
             $table->foreignId('subcategoria_id')->constrained('subcategorias');
             $table->timestamps();
         });
