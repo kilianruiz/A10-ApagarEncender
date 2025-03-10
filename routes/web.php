@@ -5,6 +5,7 @@ use App\Http\Controllers\IncidenciasController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TecnicoController;
+use App\Http\Controllers\ClienteController;
 
 // Ruta principal
 Route::get('/', function () {
@@ -36,7 +37,7 @@ Route::middleware(['auth'])->group(function () {
     // rutas incidencias
     Route::controller(IncidenciasController::class)->group(function () {
         // Ruta incidencias
-        Route::get('/incidencias', [IncidenciasController::class, 'index']);
+        Route::get('/gestor', [IncidenciasController::class, 'index']);
         Route::get('/incidencias/crear', [IncidenciasController::class, 'crear']);
         Route::get('/incidencias/{id}', [IncidenciasController::class, 'ver'])->name('incidencias.ver');
     
@@ -46,4 +47,9 @@ Route::middleware(['auth'])->group(function () {
     Route::controller(TecnicoController::class)->group(function () {
         Route::get('/tecnicos', [TecnicoController::class, 'index'])->name('crudTecnico');
     });
+    //rutas clientes
+    Route::controller(ClienteController::class)->group(function () {
+        Route::get('/clientes/{id}', [ClienteController::class, 'index'])->name('crudClientes');
+    });
 });
+
