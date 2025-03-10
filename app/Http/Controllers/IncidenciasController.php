@@ -9,7 +9,7 @@ class IncidenciasController extends Controller
     // Pagina de incidencias
     public function index()
     {
-        return view('incidencias');
+        return view('crudGestor.index');
     }
 
     // Pagina para crear incidencias

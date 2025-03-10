@@ -26,7 +26,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CategoriaSeeder::class,
             SubcategoriaSeeder::class,
-            IncidenciasSeeder::class
+            IncidenciasSeeder::class,
+            IncidenciasUsuariosSeeder::class
         ]);
     }
 }
