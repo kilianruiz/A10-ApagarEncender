@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IncidenciasController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClienteController;
+
 
 // Ruta principal
 Route::get('/', function () {
@@ -40,3 +42,5 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/incidencias/{id}', [IncidenciasController::class, 'ver'])->name('incidencias.ver');
     });
 });
+
+Route::get('/cliente/{userId}/incidencias', [ClienteController::class, 'mostrarIncidencias'])->name('cliente.incidencias');
