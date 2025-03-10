@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('titulo');
             $table->text('comentario');
             $table->text('imagen');
-            $table->text('feedback')->nullable();
             $table->foreignId('user_id')->constrained('users'); // Relación 1 usuario N incidencia_usuario
             $table->foreignId('incidencia_id')->constrained('incidencias'); // Relación 1 incidencia N incidencia_usuario
             $table->timestamps();
