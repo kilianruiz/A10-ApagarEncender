@@ -98,8 +98,12 @@ class AdminUserController extends Controller
         return response()->json(['message' => 'Usuario eliminado exitosamente.']);
     }
 
-    public function edit(User $user)
+    public function edit(Request $request, User $user)
     {
+        $id = $request->input('id');
+
+        // Buscar el usuario junto con su rol y sede
+        $user = User::find($id);
         return response()->json($user);
     }
 }

@@ -33,7 +33,7 @@
             </div>
             <div class="modal-body">
                 <form id="userForm">
-                    <input type="hidden" id="userId" name="id">
+                    <input type="hidden" id="id" name="id">
                     <div class="form-group">
                         <label for="name">Nombre</label>
                         <input type="text" id="name" name="name" class="form-control" required>
@@ -78,6 +78,38 @@
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+// Definir la función Editar en el ámbito global
+function Editar(id) {
+    // Usar fetch para realizar la solicitud GET
+    fetch('/admin/' + id + '/edit', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la solicitud');
+        }
+        return response.json();
+    })
+    .then(json => {
+        // DEBUG (se confirma que se recibe un objeto con datos)
+        console.log(json);
+
+        // Rellenar los campos del formulario con los datos del usuario
+        document.getElementById('id').value = json.id;
+        document.getElementById('name').value = json.name;
+        document.getElementById('email').value = json.email;
+        document.getElementById('role_id').value = json.role_id;
+        document.getElementById('sede_id').value = json.sede_id;
+        $('#userModal').modal('show'); // Mostrar el modal
+    })
+    .catch(error => {
+        console.error('Error al obtener los datos del usuario:', error);
+    });
+}
+
 $(document).ready(function() {
     // Inicializar la lista de productos al cargar la página
     ListarProductos();
@@ -89,9 +121,9 @@ $(document).ready(function() {
     });
 
     // Función para listar productos
-    function ListarProductos() {
+    function ListarProductos(filtro = '') {
         const resultado = document.getElementById('userTable');
-        fetch('/admin/users', {
+        fetch(`/admin/users?nombre=${encodeURIComponent(filtro)}`, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -108,8 +140,8 @@ $(document).ready(function() {
                     str += `<td>${user.role ? user.role.nombre : 'Sin rol'}</td>`;
                     str += `<td>${user.sede ? user.sede.nombre : 'Sin sede'}</td>`;
                     str += `<td>`;
-                    str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})">Editar</button>`;
-                    str += `<button type='button' class='btn btn-danger' onclick="Eliminar(${user.id})">Eliminar</button>`;
+                    str += `<button type='button' class='btn btn-success' onclick=\"Editar(${user.id})\">Editar</button>`;
+                    str += `<button type='button' class='btn btn-danger' onclick=\"Eliminar(${user.id})\">Eliminar</button>`;
                     str += `</td></tr>`;
                     tabla += str;
                 });
@@ -127,7 +159,7 @@ $(document).ready(function() {
     // Función para registrar o actualizar un usuario
     $('#userForm').submit(function(e) {
         e.preventDefault();
-        let id = $('#userId').val();
+        let id = $('#id').val();
         let url = id ? `/admin/users/${id}` : "{{ route('crudAdmin.store') }}";
         let method = id ? 'PUT' : 'POST';
 
@@ -152,25 +184,6 @@ $(document).ready(function() {
             }
         })
     });
-
-    // Función para editar un usuario
-    window.Editar = function(id) {
-        fetch(`/admin/users/${id}/edit`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(json => {
-            $('#userId').val(json.id);
-            $('#name').val(json.name);
-            $('#email').val(json.email);
-            $('#role_id').val(json.role_id);
-            $('#sede_id').val(json.sede_id);
-            $('#userModal').modal('show');
-        })
-    }
 
     // Función para eliminar un usuario
     window.Eliminar = function(id) {
@@ -209,7 +222,7 @@ $(document).ready(function() {
 
     $('#openUserModal').click(function() {
         $('#userForm')[0].reset();
-        $('#userId').val('');
+        $('#id').val('');
         $('#userModal').modal('show');
     });  
 });
