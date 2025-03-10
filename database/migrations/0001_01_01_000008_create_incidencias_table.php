@@ -16,12 +16,13 @@ return new class extends Migration
             $table->string('titulo');
             $table->text('descripcion');
             $table->text('comentario')->nullable();
-            $table->enum('estado', ['sin_asignar', 'asignada', 'en_proceso', 'resuelta', 'cerrada'])->default('sin_asignar'); 
+            $table->enum('estado', ['sin asignar', 'asignada', 'en proceso', 'resuelta', 'cerrada'])->default('sin asignar'); 
             $table->enum('prioridad', ['alta', 'media', 'baja'])->default('media'); 
             $table->foreignId('user_id')->constrained('users'); 
             $table->foreignId('sede_id')->constrained('sedes'); 
             $table->text('imagen')->nullable();
             $table->foreignId('subcategoria_id')->constrained('subcategorias');
+            $table->text('feedback')->nullable();
             $table->timestamps();
         });
     }
