@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'sede_id',
+        'jefe_id'
     ];
 
     public function role()
@@ -34,6 +35,11 @@ class User extends Authenticatable
     public function sede()
     {
         return $this->belongsTo(Sede::class);
+    }
+
+    public function jefe()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function incidencias()

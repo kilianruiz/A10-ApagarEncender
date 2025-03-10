@@ -11,9 +11,8 @@ class SedeSeeder extends Seeder
     {
         $sedes = [
             ['nombre' => 'Sede Central', 'localización' => 'Barcelona'],
-            ['nombre' => 'Sede Norte', 'localización' => 'Girona'],
-            ['nombre' => 'Sede Sur', 'localización' => 'Tarragona'],
-            ['nombre' => 'Sede Este', 'localización' => 'Lleida'],
+            ['nombre' => 'Sede Este', 'localización' => 'Berlín'],
+            ['nombre' => 'Sede Oeste', 'localización' => 'Montreal']
         ];
 
         foreach ($sedes as $sede) {
