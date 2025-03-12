@@ -13,7 +13,23 @@
         @endif
 
         <button id="btn-crear" name="btn-crear" class="btn btn-primary mb-3">Crear</button>
-
+        <ul class="nav nav-tabs" id="incidenciasTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-status="sin asignar" data-bs-toggle="tab" data-bs-target="#sinAsignar" type="button">Sin Asignar</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-status="asignadas" data-bs-toggle="tab" data-bs-target="#asignadas" type="button">Asignadas</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-status="en proceso" data-bs-toggle="tab" data-bs-target="#enProceso" type="button">En Proceso</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-status="resueltas" data-bs-toggle="tab" data-bs-target="#resueltas" type="button">Resueltas</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-status="cerradas" data-bs-toggle="tab" data-bs-target="#cerradas" type="button">Cerradas</button>
+            </li>
+        </ul>
         <table class="table table-striped" id="incidenciasTable">
             <thead>
                 <tr>
@@ -37,15 +53,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="viewIncidenciaModalLabel">Detalles de la Incidencia</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
                 </div>
                 <div class="modal-body" id="incidenciaDetails">
                     <!-- Los detalles de la incidencia se cargarán aquí con JavaScript -->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -57,9 +70,6 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editIncidenciaModalLabel">Editar Incidencia</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
                 </div>
                 <div class="modal-body">
                     <form id="editIncidenciaForm">
