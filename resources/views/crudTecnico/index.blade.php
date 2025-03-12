@@ -25,6 +25,26 @@
         <!-- Pestaña de Incidencias Pendientes -->
         <div class="tab-pane fade show active" id="pendientes" role="tabpanel">
             <h2>Comentarios de Incidencias Pendientes</h2>
+            
+            <!-- Agregar filtros -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="filtroEstado" class="form-label">Filtrar por Estado:</label>
+                    <select id="filtroEstado" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="asignada">Asignada</option>
+                        <option value="en proceso">En proceso</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="filtroFecha" class="form-label">Filtrar hasta fecha:</label>
+                    <input type="date" id="filtroFecha" class="form-control">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+                </div>
+            </div>
+
             <div id="tabla-comentarios">
                 <table class="table">
                     <thead>

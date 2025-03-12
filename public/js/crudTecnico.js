@@ -1,6 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
     cargarComentarios();
     
+    // Configurar fecha mínima en el filtro
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('filtroFecha').min = today;
+    document.getElementById('filtroFecha').value = today;
+    
+    // Agregar event listeners para filtros automáticos
+    document.getElementById('filtroEstado').addEventListener('change', () => {
+        aplicarFiltros();
+    });
+    
+    document.getElementById('filtroFecha').addEventListener('change', () => {
+        aplicarFiltros();
+    });
+    
     // Agregar listeners para los cambios de pestaña
     document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
         tab.addEventListener('shown.bs.tab', function(e) {
@@ -13,8 +27,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function cargarComentarios() {
-    fetch('/tecnicos/comentarios')
+function cargarComentarios(filtros = {}) {
+    // Construir URL con los filtros usando URLSearchParams
+    const url = new URL('/tecnicos/comentarios', window.location.origin);
+    const params = new URLSearchParams();
+    
+    if (filtros.estado) {
+        params.append('estado', filtros.estado);
+    }
+    if (filtros.fecha) {
+        params.append('fecha', filtros.fecha);
+    }
+    
+    if (params.toString()) {
+        url.search = params.toString();
+    }
+
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             const tbody = document.getElementById('comentarios-body');
@@ -23,6 +52,7 @@ function cargarComentarios() {
             if (data.length === 0) {
                 tbody.innerHTML = '';
                 noComentarios.classList.remove('d-none');
+                noComentarios.textContent = 'No se encontraron incidencias con los filtros seleccionados.';
                 return;
             }
 
@@ -198,4 +228,19 @@ function resolverIncidencia(incidenciaId, feedback) {
             text: error.message || 'Error al resolver la incidencia'
         });
     });
+}
+
+function aplicarFiltros() {
+    const filtros = {
+        estado: document.getElementById('filtroEstado').value,
+        fecha: document.getElementById('filtroFecha').value
+    };
+    cargarComentarios(filtros);
+}
+
+function limpiarFiltros() {
+    document.getElementById('filtroEstado').value = '';
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('filtroFecha').value = today;
+    cargarComentarios();
 }
