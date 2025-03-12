@@ -29,7 +29,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/create', [AdminUserController::class, 'create'])->name('crudAdmin.create');
         Route::post('/admin', [AdminUserController::class, 'store'])->name('crudAdmin.store');
         Route::get('/admin/{id}/edit', [AdminUserController::class, 'edit'])->name('crudAdmin.edit');
-        Route::put('/admin/{id}', [AdminUserController::class, 'update'])->name('crudAdmin.update');
+        Route::put('/admin/users/{id}', [AdminUserController::class, 'update'])->name('crudAdmin.update');
         Route::delete('/admin/{id}', [AdminUserController::class, 'destroy'])->name('crudAdmin.destroy');
         Route::resource('admin/users', AdminUserController::class)->except(['show', 'create', 'edit']);
     });
@@ -52,6 +52,11 @@ Route::middleware(['auth'])->group(function () {
     //rutas clientes
     Route::controller(ClienteController::class)->group(function () {
         Route::get('/clientes/{id}', [ClienteController::class, 'index'])->name('crudClientes');
+        Route::get('/incidencia/{id}', [ClienteController::class, 'show'])->name('incidencias.show');
+        Route::get('/incidencias', [ClienteController::class, 'getIncidencias'])->name('incidencias.index');
+
     });
 });
+
+
 

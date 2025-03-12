@@ -3,7 +3,25 @@
 @section('content')
 <div class="container">
     <h1>Gestión de Usuarios</h1>
-    <input type="text" id="filter" placeholder="Buscar usuarios..." class="form-control mb-3">
+    <div class="mb-3">
+        <input type="text" id="filter" placeholder="Buscar usuarios por nombre..." class="form-control mb-2">
+        <input type="text" id="filterEmail" placeholder="Buscar usuarios por email..." class="form-control mb-2">
+        <select id="filterRole" class="form-control mb-2">
+            <option value="">Filtrar por rol</option>
+            @foreach($roles as $role)
+                @if($role->id !== 1)
+                    <option value="{{ $role->id }}">{{ $role->nombre }}</option>
+                @endif
+            @endforeach
+        </select>
+        <select id="filterSede" class="form-control mb-2">
+            <option value="">Filtrar por sede</option>
+            @foreach($sedes as $sede)
+                <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
+            @endforeach
+        </select>
+        <button id="clearFilters" class="btn btn-secondary mb-3">Limpiar Filtros</button>
+    </div>
     <button id="openUserModal" class="btn btn-primary mb-3">Crear Usuario</button>
     <table class="table">
         <thead>
@@ -19,40 +37,94 @@
             <!-- Los usuarios se cargarán aquí mediante AJAX -->
         </tbody>
     </table>
+    <!-- Contenedor para los controles de paginación -->
+    <div id="paginationControls" class="mt-3"></div>
 </div>
 
-<!-- Modal para crear/editar usuario -->
-<div id="userModal" class="modal" tabindex="-1" role="dialog">
+<!-- Modal para crear usuario -->
+<div id="createUserModal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Usuario</h5>
+                <h5 class="modal-title">Crear Usuario</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="userForm">
-                    <input type="hidden" id="userId" name="id">
+                <form id="createUserForm">
                     <div class="form-group">
-                        <label for="name">Nombre</label>
-                        <input type="text" id="name" name="name" class="form-control" required>
+                        <label for="createName">Nombre</label>
+                        <input type="text" id="createName" name="name" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" class="form-control" required>
+                        <label for="createEmail">Email</label>
+                        <input type="email" id="createEmail" name="email" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="password">Contraseña</label>
-                        <input type="password" id="password" name="password" class="form-control">
+                        <label for="createPassword">Contraseña</label>
+                        <input type="password" id="createPassword" name="password" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="password_confirmation">Confirmar Contraseña</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" class="form-control">
+                        <label for="createPasswordConfirmation">Confirmar Contraseña</label>
+                        <input type="password" id="createPasswordConfirmation" name="password_confirmation" class="form-control" required>
                     </div>
-                    <div class="form-group">
-                        <label for="role_id">Rol</label>
+                    <label for="role_id">Rol</label>
                         <select id="role_id" name="role_id" class="form-control" required>
+                            <option value="">Seleccione un rol</option>
+                            @foreach($roles as $role)
+                            @if($role->id !== 1)
+                                <option value="{{ $role->id }}">{{ $role->nombre }}</option>
+                            @endif
+                            @endforeach
+                        </select>
+                        
+                    <label for="sede_id">Sede</label>
+                        <select id="sede_id" name="sede_id" class="form-control" required>
+                            <option value="">Seleccione una sede</option>
+                            @foreach($sedes as $sede)
+                                <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
+                            @endforeach
+                        </select>
+                    <button type="submit" class="btn btn-primary">Crear</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar usuario -->
+<div id="editUserModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Usuario</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editId" name="id">
+                    <div class="form-group">
+                        <label for="editName">Nombre</label>
+                        <input type="text" id="editName" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" id="editEmail" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPassword">Contraseña</label>
+                        <input type="password" id="editPassword" name="password" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="editPasswordConfirmation">Confirmar Contraseña</label>
+                        <input type="password" id="editPasswordConfirmation" name="password_confirmation" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="editRoleId">Rol</label>
+                        <select id="editRoleId" name="role_id" class="form-control" required>
                             <option value="">Seleccione un rol</option>
                             @foreach($roles as $role)
                                 <option value="{{ $role->id }}">{{ $role->nombre }}</option>
@@ -60,8 +132,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="sede_id">Sede</label>
-                        <select id="sede_id" name="sede_id" class="form-control" required>
+                        <label for="editSedeId">Sede</label>
+                        <select id="editSedeId" name="sede_id" class="form-control" required>
                             <option value="">Seleccione una sede</option>
                             @foreach($sedes as $sede)
                                 <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
@@ -77,141 +149,5 @@
 
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    // Inicializar la lista de productos al cargar la página
-    ListarProductos();
-
-    // Escuchar el evento keyup para el filtro de búsqueda
-    $('#filter').on('keyup', function() {
-        const valor = $(this).val();
-        ListarProductos(valor);
-    });
-
-    // Función para listar productos
-    function ListarProductos() {
-        const resultado = document.getElementById('userTable');
-        fetch('/admin/users', {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Verifica los datos recibidos
-            if (data.usuarios && Array.isArray(data.usuarios)) {
-                let tabla = '';
-                data.usuarios.forEach(user => {
-                    let str = `<tr><td>${user.name}</td>`;
-                    str += `<td>${user.email}</td>`;
-                    str += `<td>${user.role ? user.role.nombre : 'Sin rol'}</td>`;
-                    str += `<td>${user.sede ? user.sede.nombre : 'Sin sede'}</td>`;
-                    str += `<td>`;
-                    str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})">Editar</button>`;
-                    str += `<button type='button' class='btn btn-danger' onclick="Eliminar(${user.id})">Eliminar</button>`;
-                    str += `</td></tr>`;
-                    tabla += str;
-                });
-                resultado.innerHTML = tabla;
-            } else {
-                resultado.innerHTML = '<tr><td colspan="5">No se encontraron usuarios.</td></tr>';
-            }
-        })
-        .catch(error => {
-            console.error('Error al obtener los usuarios:', error);
-            resultado.innerHTML = '<tr><td colspan="5">Error al cargar los usuarios.</td></tr>';
-        });
-    }
-
-    // Función para registrar o actualizar un usuario
-    $('#userForm').submit(function(e) {
-        e.preventDefault();
-        let id = $('#userId').val();
-        let url = id ? `/admin/users/${id}` : "{{ route('crudAdmin.store') }}";
-        let method = id ? 'PUT' : 'POST';
-
-        const formdata = new FormData(this);
-        formdata.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-
-        fetch(url, {
-            method: method,
-            body: formdata
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                Swal.fire({
-                    icon: 'success',
-                    title: data.message,
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                $('#userModal').modal('hide');
-                ListarProductos('');
-            }
-        })
-    });
-
-    // Función para editar un usuario
-    window.Editar = function(id) {
-        fetch(`/admin/users/${id}/edit`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(json => {
-            $('#userId').val(json.id);
-            $('#name').val(json.name);
-            $('#email').val(json.email);
-            $('#role_id').val(json.role_id);
-            $('#sede_id').val(json.sede_id);
-            $('#userModal').modal('show');
-        })
-    }
-
-    // Función para eliminar un usuario
-    window.Eliminar = function(id) {
-        Swal.fire({
-            title: 'Está seguro de eliminar?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Si!',
-            cancelButtonText: 'NO'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/admin/users/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.json())
-                .then(responseText => {
-                    if (responseText.message === "Usuario eliminado exitosamente.") {
-                        ListarProductos('');
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Eliminado',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    }
-                })
-            }
-        });
-    }
-
-    $('#openUserModal').click(function() {
-        $('#userForm')[0].reset();
-        $('#userId').val('');
-        $('#userModal').modal('show');
-    });  
-});
-</script>
+<script src="{{ asset('js/crudAdmin.js') }}"></script>
 @endsection

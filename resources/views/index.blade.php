@@ -1,5 +1,9 @@
 @extends('layouts.layout')
 
+@section('title', 'Login')
+
+
+
 @section('content')
 <link rel="stylesheet" href="{{ asset('styles/index.css') }}">
     <div class="login-container">
