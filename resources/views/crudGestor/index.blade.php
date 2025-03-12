@@ -14,19 +14,19 @@
     <!-- Pestañas -->
     <ul class="nav nav-tabs" id="incidenciasTabs" role="tablist">
         <li class="nav-item">
-            <button class="nav-link active" data-status="sin_asignar" data-bs-toggle="tab" data-bs-target="#sinAsignar" type="button">Sin Asignar</button>
+            <button class="nav-link active" data-status="sin_asignar" data-bs-toggle="tab" data-bs-target="#sinAsignar" type="button">Sin asignar</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-status="asignadas" data-bs-toggle="tab" data-bs-target="#asignadas" type="button">Asignadas</button>
+            <button class="nav-link" data-status="asignada" data-bs-toggle="tab" data-bs-target="#asignada" type="button">Asignadas</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-status="en_proceso" data-bs-toggle="tab" data-bs-target="#enProceso" type="button">En Proceso</button>
+            <button class="nav-link" data-status="en_proceso" data-bs-toggle="tab" data-bs-target="#enProceso" type="button">En proceso</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-status="resueltas" data-bs-toggle="tab" data-bs-target="#resueltas" type="button">Resueltas</button>
+            <button class="nav-link" data-status="resuelta" data-bs-toggle="tab" data-bs-target="#resuelta" type="button">Resueltas</button>
         </li>
         <li class="nav-item">
-            <button class="nav-link" data-status="cerradas" data-bs-toggle="tab" data-bs-target="#cerradas" type="button">Cerradas</button>
+            <button class="nav-link" data-status="cerrada" data-bs-toggle="tab" data-bs-target="#cerrada" type="button">Cerradas</button>
         </li>
     </ul>
 
@@ -77,7 +77,7 @@
                 <tbody id="tabla-en_proceso"></tbody>
             </table>
         </div>
-        <div class="tab-pane fade" id="resueltas" role="tabpanel">
+        <div class="tab-pane fade" id="resuelta" role="tabpanel">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -92,7 +92,7 @@
                 <tbody id="tabla-resuelta"></tbody>
             </table>
         </div>
-        <div class="tab-pane fade" id="cerradas" role="tabpanel">
+        <div class="tab-pane fade" id="cerrada" role="tabpanel">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -126,7 +126,7 @@
                 .then(data => {
                     console.log(`Datos recibidos para el estado: ${estado}`, data);
                     
-                    let tabla = document.getElementById(`tabla-${estado.replace(/\s/g, "")}`);
+                    let tabla = document.getElementById(`tabla-${estadoNormalizado}`);
                     tabla.innerHTML = ""; // Limpiar tabla
 
                     if (data.length === 0) {

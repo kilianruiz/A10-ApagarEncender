@@ -86,6 +86,30 @@ class IncidenciasSeeder extends Seeder
                 'imagen' => null,
                 'subcategoria_id' => 6,
                 'feedback' => null
+            ],
+            [
+                'titulo' => 'Opa opa',
+                'descripcion' => 'Opa opa cerrada',
+                'comentario' => null,
+                'estado' => 'en proceso',
+                'prioridad' => 'media',
+                'user_id' => 58,
+                'sede_id' => 1,
+                'imagen' => null,
+                'subcategoria_id' => 6,
+                'feedback' => null
+            ],
+            [
+                'titulo' => 'Opa opa opa',
+                'descripcion' => 'Opa opa en proceso',
+                'comentario' => null,
+                'estado' => 'cerrada',
+                'prioridad' => 'media',
+                'user_id' => 58,
+                'sede_id' => 1,
+                'imagen' => null,
+                'subcategoria_id' => 6,
+                'feedback' => null
             ]
         ];
 
