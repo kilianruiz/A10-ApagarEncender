@@ -77,11 +77,16 @@ function cargarComentarios(filtros = {}) {
                         </select>
                     </td>
                     <td>
-                        <button onclick="mostrarFormularioResolucion(${comentario.incidencia.id})" 
-                                class="btn btn-primary btn-sm"
-                                ${comentario.incidencia.estado !== 'en proceso' ? 'disabled' : ''}>
-                            Resolver
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button onclick="mostrarFormularioResolucion(${comentario.incidencia.id})" 
+                                    class="btn btn-primary btn-sm"
+                                    ${comentario.incidencia.estado !== 'en proceso' ? 'disabled' : ''}>
+                                Resolver
+                            </button>
+                            <a href="#" class="btn btn-info btn-sm" title="Comunicar con usuario">
+                                <i class="fas fa-comments"></i>
+                            </a>
+                        </div>
                     </td>
                 </tr>
             `}).join('');
