@@ -15,7 +15,7 @@ class IncidenciasController extends Controller
         $user = Auth::user();
 
         // Buscar la sede por nombre
-        $sede = $user->sede()->where('nombre', $nombre_sede)->first();
+        $sede = $user->sede()->where('localización', $nombre_sede)->first();
 
         if (!$sede) {
             return abort(404, 'Sede no encontrada');
@@ -46,24 +46,29 @@ class IncidenciasController extends Controller
     public function getByStatus(Request $request)
     {
         $estado = str_replace("_", " ", $request->input('estado')); // Reemplazar "_" por espacios
-
+    
         if (!$estado) {
             return response()->json(['error' => 'Estado no proporcionado'], 400);
         }
-
+    
         $user = Auth::user(); // Obtener el usuario autenticado
         $sede_id = $user->sede_id;
-
+    
+        // Buscar las incidencias, uniendo la relación de usuario, categoría y subcategoría
         if ($sede_id === null) {
             // Admin puede ver todas las incidencias de todas las sedes
-            $incidencias = Incidencia::where('estado', $estado)->get();
+            $incidencias = Incidencia::with(['user', 'categoria', 'subcategoria'])
+                                    ->where('estado', $estado)
+                                    ->get();
         } else {
             // Filtrar las incidencias por sede_id del usuario autenticado
-            $incidencias = Incidencia::where('estado', $estado)
+            $incidencias = Incidencia::with(['user', 'categoria', 'subcategoria'])
+                                    ->where('estado', $estado)
                                     ->where('sede_id', $sede_id)
                                     ->get();
         }
-
+    
         return response()->json($incidencias);
     }
+
 }

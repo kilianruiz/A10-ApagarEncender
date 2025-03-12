@@ -13,7 +13,7 @@ class SubcategoriaSeeder extends Seeder
         $subcategorias = [
             'Software' => [
                 'Aplicación de gestión administrativa',
-                'Acceso remot',
+                'Acceso remoto',
                 'Aplicación de videoconferencia',
             ],
             'Hardware' => [
