@@ -123,12 +123,13 @@ class AdminUserController extends Controller
             // Encuentra el usuario por su ID
             $user = User::findOrFail($id);
 
+            // Elimina las referencias en la tabla incidencia_usuario
+            DB::table('incidencia_usuario')->whereIn('incidencia_id', function($query) use ($user) {
+                $query->select('id')->from('incidencias')->where('user_id', $user->id);
+            })->delete();
+
             // Elimina las incidencias asociadas al usuario
             Incidencia::where('user_id', $user->id)->delete();
-
-            // Actualiza o elimina registros relacionados
-            // Por ejemplo, establecer jefe_id a null para los usuarios que referencian al usuario que se va a eliminar
-            User::where('jefe_id', $user->id)->update(['jefe_id' => null]);
 
             // Elimina el usuario
             $user->delete();
