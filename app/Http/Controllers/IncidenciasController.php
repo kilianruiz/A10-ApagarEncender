@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Models\Incidencia;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class IncidenciasController extends Controller
 {
@@ -13,7 +14,7 @@ class IncidenciasController extends Controller
     public function index()
     {
         // Obtener el usuario autenticado
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Si el usuario es admin (sede_id null), mostrar todas las incidencias
         if ($user->sede_id === null) {
