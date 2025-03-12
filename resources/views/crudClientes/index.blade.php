@@ -35,7 +35,8 @@
         </div>
     @endif
 
-    <button id="btn-crear" name="btn-crear" class="btn btn-primary mb-3">Crear</button>
+    <button id="btn-crear" name="btn-crear" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createIncidenciaModal">Crear</button>
+
     <ul class="nav nav-tabs" id="incidenciasTabs" role="tablist">
         <li class="nav-item">
             <button class="nav-link active" data-status="sin asignar" data-bs-toggle="tab" data-bs-target="#sinAsignar" type="button">Sin Asignar</button>
@@ -114,6 +115,45 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para crear la incidencia -->
+<div class="modal fade" id="createIncidenciaModal" tabindex="-1" aria-labelledby="createIncidenciaModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createIncidenciaModalLabel">Crear Nueva Incidencia</h5>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para crear una incidencia -->
+                <form id="createIncidenciaForm" method="POST" action="{{ route('incidencias.store') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="createTitulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="createTitulo" name="titulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createDescripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="createDescripcion" name="descripcion" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createPrioridad" class="form-label">Prioridad</label>
+                        <select class="form-select" id="createPrioridad" name="prioridad" required>
+                            <option value="alta">Alta</option>
+                            <option value="media">Media</option>
+                            <option value="baja">Baja</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createImagen" class="form-label">Imagen</label>
+                        <input type="file" class="form-control" id="createImagen" name="imagen" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Crear Incidencia</button>
+                </form>
+                
             </div>
         </div>
     </div>
