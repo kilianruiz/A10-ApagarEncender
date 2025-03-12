@@ -46,6 +46,10 @@ Route::middleware(['auth'])->group(function () {
     //rutas tecnicos
     Route::controller(TecnicoController::class)->group(function () {
         Route::get('/tecnicos', [TecnicoController::class, 'index'])->name('crudTecnico');
+        Route::get('/tecnicos/comentarios', [TecnicoController::class, 'getComentarios'])->name('tecnicos.comentarios');
+        Route::get('/tecnicos/historial', [TecnicoController::class, 'getHistorial'])->name('tecnicos.historial');
+        Route::post('/tecnicos/resolver-incidencia', [TecnicoController::class, 'resolverIncidencia'])->name('tecnicos.resolver');
+        Route::post('/tecnicos/cambiar-estado', [TecnicoController::class, 'cambiarEstado'])->name('tecnicos.cambiarEstado');
     });
     //rutas clientes
     Route::controller(ClienteController::class)->group(function () {
