@@ -123,23 +123,41 @@ class AdminUserController extends Controller
             // Encuentra el usuario por su ID
             $user = User::findOrFail($id);
 
-            // Elimina las referencias en la tabla incidencia_usuario
-            DB::table('incidencia_usuario')->whereIn('incidencia_id', function($query) use ($user) {
-                $query->select('id')->from('incidencias')->where('user_id', $user->id);
-            })->delete();
+            // Verifica si es el último usuario de la sede
+            $otrosUsuarios = User::where('sede_id', $user->sede_id)
+                                 ->where('id', '!=', $user->id)
+                                 ->exists();
 
-            // Elimina las incidencias asociadas al usuario
-            Incidencia::where('user_id', $user->id)->delete();
+            if (!$otrosUsuarios) {
+                // Si no hay otros usuarios, elimina todas las incidencias de la sede
+                Incidencia::where('sede_id', $user->sede_id)->delete();
+            } else {
+                // Selecciona un usuario aleatorio de la misma sede para reasignar las incidencias
+                $usuarioAlternativo = User::where('sede_id', $user->sede_id)
+                                          ->where('id', '!=', $user->id)
+                                          ->inRandomOrder()
+                                          ->first();
+
+                if (!$usuarioAlternativo) {
+                    return response()->json(['error' => 'No se puede eliminar el usuario porque no hay otro usuario en la misma sede para reasignar las incidencias.'], 400);
+                }
+
+                // Actualiza las incidencias creadas por el usuario para que sean gestionadas por el usuario alternativo
+                Incidencia::where('user_id', $user->id)->update(['user_id' => $usuarioAlternativo->id]);
+
+                // Actualiza las referencias en la tabla incidencia_usuario donde el usuario es técnico
+                DB::table('incidencia_usuario')->where('user_id', $user->id)->update(['user_id' => $usuarioAlternativo->id]);
+            }
 
             // Elimina el usuario
             $user->delete();
 
             DB::commit();
 
-            return response()->json(['message' => 'Usuario e incidencias eliminados exitosamente.']);
+            return response()->json(['message' => 'Usuario eliminado y sus incidencias gestionadas correctamente.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Hubo un error al eliminar el usuario o las incidencias: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Hubo un error al eliminar el usuario o gestionar las incidencias: ' . $e->getMessage()], 500);
         }
     }
     public function edit($id)

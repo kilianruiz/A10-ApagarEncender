@@ -222,18 +222,29 @@ $(document).ready(function() {
                 })
                 .then(response => response.json())
                 .then(responseText => {
-                    if (responseText.message === "Usuario e incidencias eliminados exitosamente.") {
+                    if (responseText.message) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Usuario e incidencias eliminados exitosamente',
+                            title: responseText.message,
                             showConfirmButton: false,
                             timer: 1100
                         });
-                        ListarProductos();
+                        ListarProductos(); // Actualiza la lista de usuarios
+                    } else if (responseText.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: responseText.error,
+                        });
                     }
                 })
                 .catch(error => {
                     console.error('Error al eliminar el usuario:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un problema al eliminar el usuario.',
+                    });
                 });
             }
         });
