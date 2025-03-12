@@ -4,45 +4,95 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2>Comentarios de Incidencias</h2>
-    
-    @if($comentarios->count() > 0)
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Título</th>
-                    <th>Comentario</th>
-                    <th>Imagen</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($comentarios as $comentario)
-                    <tr>
-                        <td>{{ $comentario->id }}</td>
-                        <td>{{ $comentario->titulo }}</td>
-                        <td>{{ Str::limit($comentario->comentario, 50) }}</td>
-                        <td>
-                            @if($comentario->imagen)
-                                <img src="{{ asset('/img' . $comentario->imagen) }}" alt="Imagen" width="50">
-                            @else
-                                Sin imagen
-                            @endif
-                        </td>
-                        <td>{{ $comentario->created_at->format('d/m/Y H:i') }}</td>
-                        <td>
-                            <a href="{{ route('incidencias.ver', $comentario->incidencia_id) }}" class="btn btn-primary btn-sm">Resolver</a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @else
-        <div class="alert alert-info">
-            No hay comentarios registrados.
+    <!-- Pestañas de navegación -->
+    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pendientes-tab" data-bs-toggle="tab" 
+                    data-bs-target="#pendientes" type="button" role="tab">
+                Incidencias Pendientes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="historial-tab" data-bs-toggle="tab" 
+                    data-bs-target="#historial" type="button" role="tab">
+                Incidencias Resueltas
+            </button>
+        </li>
+    </ul>
+
+    <!-- Contenido de las pestañas -->
+    <div class="tab-content" id="myTabContent">
+        <!-- Pestaña de Incidencias Pendientes -->
+        <div class="tab-pane fade show active" id="pendientes" role="tabpanel">
+            <h2>Comentarios de Incidencias Pendientes</h2>
+            
+            <!-- Agregar filtros -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="filtroEstado" class="form-label">Filtrar por Estado:</label>
+                    <select id="filtroEstado" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="asignada">Asignada</option>
+                        <option value="en proceso">En proceso</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="filtroFecha" class="form-label">Filtrar hasta fecha:</label>
+                    <input type="date" id="filtroFecha" class="form-control">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+                </div>
+            </div>
+
+            <div id="tabla-comentarios">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Comentario</th>
+                            <th>Imagen</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comentarios-body">
+                    </tbody>
+                </table>
+                <div id="no-comentarios" class="alert alert-info d-none">
+                    No hay incidencias pendientes.
+                </div>
+            </div>
         </div>
-    @endif
+
+        <!-- Pestaña de Historial -->
+        <div class="tab-pane fade" id="historial" role="tabpanel">
+            <h2>Historial de Incidencias Resueltas</h2>
+            <div id="tabla-historial">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Comentario</th>
+                            <th>Feedback</th>
+                            <th>Fecha Resolución</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historial-body">
+                    </tbody>
+                </table>
+                <div id="no-historial" class="alert alert-info d-none">
+                    No hay incidencias resueltas.
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/crudTecnico.js') }}"></script>
 @endsection
