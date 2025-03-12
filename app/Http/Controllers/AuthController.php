@@ -48,7 +48,7 @@ class AuthController extends Controller
         // Generar un nuevo token para prevenir ataques
         $request->session()->regenerateToken();
         // Redirigir al login
-        return redirect('/index');
+        return redirect('/login');
     }
 }
 
