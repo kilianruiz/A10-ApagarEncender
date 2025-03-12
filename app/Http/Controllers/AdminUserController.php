@@ -154,4 +154,13 @@ class AdminUserController extends Controller
         return response()->json($user);
     }
     
+    public function getUserIncidencias($id)
+    {
+        $incidencias = Incidencia::where('user_id', $id)
+            ->orWhereHas('usuarios', function($query) use ($id) {
+                $query->where('user_id', $id);
+            })
+            ->get();
+        return response()->json($incidencias);
+    }
 }

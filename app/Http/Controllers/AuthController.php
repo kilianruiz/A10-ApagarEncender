@@ -22,7 +22,7 @@ class AuthController extends Controller
         
             $user = Auth::user(); // Obtener el usuario autenticado
             if ($user->role_id == 1) {
-                return redirect('/crudAdmin');
+                return redirect('/admin');
             } elseif ($user->role_id == 2) {
                 return redirect('/clientes/' . $user->id); // Usar el ID del usuario autenticado
             } elseif ($user->role_id == 3) {
