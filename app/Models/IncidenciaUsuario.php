@@ -7,9 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class IncidenciaUsuario extends Model
 {
-    use HasFactory;
-
     protected $table = 'incidencia_usuario';
 
-    protected $fillable = ['user_id', 'incidencia_id'];
+    protected $fillable = [
+        'titulo',
+        'comentario',
+        'imagen',
+        'user_id',
+        'incidencia_id'
+    ];
+
+    public function incidencia()
+    {
+        return $this->belongsTo(Incidencia::class, 'incidencia_id');
+    }
 }
