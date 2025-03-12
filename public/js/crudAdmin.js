@@ -34,10 +34,17 @@ $(document).ready(function() {
                     } else {
                         str += `<button type='button' class='btn btn-danger' disabled>Eliminar</button>`;
                     }
+                        str += `<button type='button' class='btn btn-primary' id='btn-incidencias-${user.id}' onclick="AsignarIncidencia(${user.id})">Incidencia</button>`;
                     str += `</td></tr>`;
                     tabla += str;
                 });
                 resultado.innerHTML = tabla;
+
+                // Verificar incidencias para cada usuario
+                data.usuarios.forEach(user => {
+                    const buttonElement = document.getElementById(`btn-incidencias-${user.id}`);
+                    verificarIncidencias(user.id, buttonElement);
+                });
 
                 // Generar elementos de paginación
                 let pagination = '<nav aria-label="Page navigation example"><ul class="pagination">';
@@ -229,6 +236,58 @@ $(document).ready(function() {
                     console.error('Error al eliminar el usuario:', error);
                 });
             }
+        });
+    };
+
+    function verificarIncidencias(userId, buttonElement) {
+        fetch(`/admin/users/${userId}/incidencias`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                buttonElement.disabled = false;
+            } else {
+                buttonElement.disabled = true;
+            }
+        })
+        .catch(error => {
+            console.error('Error al verificar las incidencias:', error);
+        });
+    }
+
+    window.AsignarIncidencia = function(userId) {
+        fetch(`/admin/users/${userId}/incidencias`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const incidenciasList = document.getElementById('incidenciasList');
+            incidenciasList.innerHTML = '';
+            if (data.length > 0) {
+                data.forEach(incidencia => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.innerHTML = `
+                        <strong>Título:</strong> ${incidencia.titulo}<br>
+                        <strong>Comentario:</strong> ${incidencia.comentario ? incidencia.comentario : 'No rellenado'}<br>
+                        <strong>Imagen:</strong> ${incidencia.imagen ? `<img src="${incidencia.imagen}" alt="Imagen" style="max-width: 100px;">` : 'No disponible'}<br>
+                    `;
+                    incidenciasList.appendChild(listItem);
+                });
+                $('#incidenciasModal').modal('show');
+            } else {
+                alert('Este usuario no tiene incidencias.');
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener las incidencias:', error);
         });
     };
 });

@@ -6,7 +6,6 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TecnicoController;
 use App\Http\Controllers\ClienteController;
-
 // Ruta principal
 Route::get('/', function () {
     return redirect()->route('login');
@@ -32,6 +31,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/admin/users/{id}', [AdminUserController::class, 'update'])->name('crudAdmin.update');
         Route::delete('/admin/{id}', [AdminUserController::class, 'destroy'])->name('crudAdmin.destroy');
         Route::resource('admin/users', AdminUserController::class)->except(['show', 'create', 'edit']);
+        Route::get('/admin/users/{id}/incidencias', [AdminUserController::class, 'getUserIncidencias'])->name('admin.users.incidencias');
     });
 
     // rutas incidencias
