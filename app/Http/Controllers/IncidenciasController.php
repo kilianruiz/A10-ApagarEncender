@@ -39,7 +39,7 @@ class IncidenciasController extends Controller
                                 ->get();
 
         // Retornar la vista con las incidencias filtradas
-        return view('crudGestor.index', compact('sin_asignar', 'asignadas', 'resueltas', 'cerradas', 'sede'));
+        return view('crudGestor.index', compact('sin_asignar', 'asignadas', 'resueltas', 'cerradas', 'sede','user'));
     }
 
     // Obtener incidencias por estado a través de AJAX
@@ -69,6 +69,47 @@ class IncidenciasController extends Controller
         }
     
         return response()->json($incidencias);
+    }
+
+    public function asignarIncidencia(Request $request)
+    {
+        $request->validate([
+            'incidencia_id' => 'required|exists:incidencias,id',
+            'tecnico_id' => 'required|exists:users,id'
+        ]);
+
+        $user = Auth::user();
+
+        // Verificar si el técnico pertenece al jefe autenticado
+        $tecnico = User::where('id', $request->tecnico_id)
+                       ->where('jefe_id', $user->id)
+                       ->first();
+
+        if (!$tecnico) {
+            return response()->json(['error' => 'No puedes asignar a este técnico'], 403);
+        }
+
+        // Asignar la incidencia
+        $incidencia = Incidencia::findOrFail($request->incidencia_id);
+        $incidencia->user_id = $tecnico->id;
+        $incidencia->estado = 'asignada';
+        $incidencia->save();
+
+        return response()->json(['message' => 'Incidencia asignada correctamente']);
+    }
+
+    public function obtenerTecnicos()
+    {
+        $user = Auth::user(); // Obtener el usuario autenticado
+
+        // Buscar técnicos donde el jefe_id coincida con el usuario autenticado
+        $tecnicos = \App\Models\User::where('jefe_id', $user->id)->get();
+
+        if ($tecnicos->isEmpty()) {
+            return response()->json(['error' => 'No tienes técnicos asignados'], 404);
+        }
+
+        return response()->json($tecnicos);
     }
 
 }

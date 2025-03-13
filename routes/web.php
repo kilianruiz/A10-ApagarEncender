@@ -38,9 +38,10 @@ Route::middleware(['auth'])->group(function () {
     Route::controller(IncidenciasController::class)->group(function () {
         // Ruta para el gestor, se pasa el nombre de la sede en la URL
         Route::get('/gestor/{nombre_sede}', [IncidenciasController::class, 'index']);
-        
         // Ruta para obtener incidencias por estado (usado en AJAX)
         Route::get('/api/incidencias', [IncidenciasController::class, 'getByStatus']);
+        Route::post('/api/asignar-incidencia', [IncidenciasController::class, 'asignarIncidencia']);
+        Route::get('/api/tecnicos', [IncidenciasController::class, 'obtenerTecnicos']);
     });
     
     //rutas tecnicos

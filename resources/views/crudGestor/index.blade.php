@@ -47,6 +47,7 @@
                         <th>Subcategoria</th>
                         <th>Feedback</th>
                         <th>Fecha de creación</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-sin_asignar"></tbody>
@@ -67,6 +68,7 @@
                         <th>Subcategoria</th>
                         <th>Feedback</th>
                         <th>Fecha de creación</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-asignada"></tbody>
@@ -87,6 +89,7 @@
                         <th>Subcategoria</th>
                         <th>Feedback</th>
                         <th>Fecha de creación</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-en_proceso"></tbody>
@@ -107,6 +110,7 @@
                         <th>Subcategoria</th>
                         <th>Feedback</th>
                         <th>Fecha de creación</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-resuelta"></tbody>
@@ -127,6 +131,7 @@
                         <th>Subcategoria</th>
                         <th>Feedback</th>
                         <th>Fecha de creación</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-cerrada"></tbody>
