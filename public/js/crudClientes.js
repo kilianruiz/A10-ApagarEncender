@@ -1,9 +1,17 @@
+// Variable global para controlar la visibilidad de incidencias resueltas
+let mostrarResueltas = true;
+
 // Función para cargar la tabla de incidencias
-function cargarIncidencias(estado = null) {
+function cargarIncidencias(estado = null, orden = 'desc') {
     let url = '/incidencias';
+    const params = new URLSearchParams();
+    
     if (estado) {
-        url = `/incidencias?estado=${estado}`;
+        params.append('estado', estado);
     }
+    params.append('orden', orden);
+    
+    url = `${url}?${params.toString()}`;
 
     fetch(url)
         .then(response => {
@@ -18,14 +26,24 @@ function cargarIncidencias(estado = null) {
             
             if (data.length === 0) {
                 tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center">No hay incidencias en este estado</td>
+                    <tr style="height: 300px;">
+                        <td colspan="7" class="text-center align-middle">
+                            <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">No hay incidencias en este estado</p>
+                            </div>
+                        </td>
                     </tr>
                 `;
                 return;
             }
 
             data.forEach(incidencia => {
+                // Si la incidencia está resuelta y mostrarResueltas es false, la saltamos
+                if (incidencia.estado === 'resuelta' && !mostrarResueltas) {
+                    return;
+                }
+
                 const row = document.createElement('tr');
                 
                 // Cambiar el color de la prioridad
@@ -58,7 +76,7 @@ function cargarIncidencias(estado = null) {
                             <i class="fas fa-edit"></i>
                         </button>
                     </td>
-                `;
+                `;  
                 tableBody.appendChild(row);
             });
         })
@@ -204,6 +222,36 @@ function handleTabChange(event) {
     cargarIncidencias(status === 'todas' ? null : status);
 }
 
+// Función para manejar el ordenamiento por fecha
+function handleOrdenChange(orden) {
+    const activeTab = document.querySelector('#incidenciasTabs .nav-link.active');
+    const status = activeTab ? activeTab.getAttribute('data-status') : null;
+    cargarIncidencias(status === 'todas' ? null : status, orden);
+}
+
+// Función para alternar la visibilidad de incidencias resueltas
+function toggleResueltas() {
+    mostrarResueltas = !mostrarResueltas;
+    const boton = document.getElementById('toggleResueltas');
+    const icono = boton.querySelector('i');
+    
+    // Cambiar el icono y el color del botón
+    if (mostrarResueltas) {
+        icono.className = 'fas fa-eye';
+        boton.classList.remove('btn-danger');
+        boton.classList.add('btn-success');
+    } else {
+        icono.className = 'fas fa-eye-slash';
+        boton.classList.remove('btn-success');
+        boton.classList.add('btn-danger');
+    }
+    
+    // Recargar las incidencias manteniendo el estado actual
+    const activeTab = document.querySelector('#incidenciasTabs .nav-link.active');
+    const status = activeTab ? activeTab.getAttribute('data-status') : null;
+    cargarIncidencias(status === 'todas' ? null : status);
+}
+
 // Agregar event listeners cuando se carga la página
 document.addEventListener('DOMContentLoaded', function() {
     // Cargar todas las incidencias al inicio
@@ -214,4 +262,11 @@ document.addEventListener('DOMContentLoaded', function() {
     tabs.forEach(tab => {
         tab.addEventListener('click', handleTabChange);
     });
+
+    // Agregar event listeners a los botones de ordenamiento
+    document.getElementById('ordenAscendente').addEventListener('click', () => handleOrdenChange('asc'));
+    document.getElementById('ordenDescendente').addEventListener('click', () => handleOrdenChange('desc'));
+    
+    // Agregar event listener al botón de toggle de resueltas
+    document.getElementById('toggleResueltas').addEventListener('click', toggleResueltas);
 });

@@ -7,6 +7,34 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
+<style>
+    #incidenciasTable {
+        min-height: 400px; /* Altura mínima para mantener consistencia */
+    }
+    
+    #incidenciasTable tbody {
+        display: table-row-group;
+        min-height: 300px; /* Altura mínima para el cuerpo de la tabla */
+    }
+    
+    #incidenciasTable tbody:empty::after {
+        content: '';
+        display: table-row;
+        height: 300px; /* Altura cuando no hay datos */
+    }
+    
+    #incidenciasTable td {
+        vertical-align: middle; /* Alineación vertical centrada */
+        padding: 1rem; /* Espaciado consistente */
+    }
+    
+    #incidenciasTable .img-thumbnail {
+        max-width: 100px;
+        max-height: 100px;
+        object-fit: contain; /* Mantiene la proporción de la imagen */
+    }
+</style>
+
 <!-- Navbar de Bootstrap -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
@@ -36,6 +64,20 @@
     @endif
 
     <button id="btn-crear" name="btn-crear" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createIncidenciaModal">Crear</button>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="btn-group">
+            <button id="ordenAscendente" class="btn btn-outline-secondary">
+                <i class="fas fa-sort-amount-up"></i> Más antiguas
+            </button>
+            <button id="ordenDescendente" class="btn btn-outline-secondary">
+                <i class="fas fa-sort-amount-down"></i> Más recientes
+            </button>
+        </div>
+        <button id="toggleResueltas" class="btn btn-success" title="Mostrar/Ocultar incidencias resueltas">
+            <i class="fas fa-eye"></i>
+        </button>
+    </div>
 
     <ul class="nav nav-tabs" id="incidenciasTabs" role="tablist">
         <li class="nav-item" role="presentation">

@@ -55,7 +55,11 @@ class ClienteController extends Controller
             }
         }
 
-        $incidencias = $query->orderBy('created_at', 'desc')->get();
+        // Manejar el ordenamiento por fecha
+        $orden = $request->input('orden', 'desc'); // Por defecto, orden descendente
+        $query->orderBy('created_at', $orden);
+
+        $incidencias = $query->get();
 
         return response()->json($incidencias);
     }
