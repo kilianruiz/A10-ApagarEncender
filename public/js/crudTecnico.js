@@ -43,9 +43,17 @@ function cargarComentarios(filtros = {}) {
         url.search = params.toString();
     }
 
+    console.log('URL de la petición:', url.toString());
+
     fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Datos recibidos:', data); // Para depuración
             const tbody = document.getElementById('comentarios-body');
             const noComentarios = document.getElementById('no-comentarios');
             
@@ -60,12 +68,12 @@ function cargarComentarios(filtros = {}) {
             tbody.innerHTML = data.map(comentario => {
                 return `
                 <tr>
-                    <td>${comentario.id}</td>
-                    <td>${comentario.titulo}</td>
-                    <td>${comentario.comentario.substring(0, 50)}${comentario.comentario.length > 50 ? '...' : ''}</td>
+                    <td>${comentario.incidencia.id}</td>
+                    <td>${comentario.incidencia.titulo || 'Sin título'}</td>
+                    <td>${comentario.comentario ? comentario.comentario.substring(0, 50) + (comentario.comentario.length > 50 ? '...' : '') : 'Sin comentario'}</td>
                     <td>
-                        ${comentario.imagen 
-                            ? `<img src="/img${comentario.imagen}" alt="Imagen" width="50">` 
+                        ${comentario.incidencia.imagen 
+                            ? `<img src="/img${comentario.incidencia.imagen}" alt="Imagen" width="50">` 
                             : 'Sin imagen'}
                     </td>
                     <td>${new Date(comentario.created_at).toLocaleString('es')}</td>
@@ -92,6 +100,7 @@ function cargarComentarios(filtros = {}) {
             `}).join('');
         })
         .catch(error => {
+            console.error('Error en la petición:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -247,5 +256,5 @@ function limpiarFiltros() {
     document.getElementById('filtroEstado').value = '';
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('filtroFecha').value = today;
-    cargarComentarios();
+    aplicarFiltros(); // Usar aplicarFiltros en lugar de cargarComentarios
 }

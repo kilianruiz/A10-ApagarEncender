@@ -17,26 +17,32 @@ class TecnicoController extends Controller
 
     public function getComentarios(Request $request) {
         $query = IncidenciaUsuario::where('user_id', Auth::id())
-            ->whereHas('incidencia', function($query) {
+            ->with(['incidencia' => function($query) {
                 $query->where('estado', '!=', 'resuelta');
-            })
-            ->with('incidencia');
+            }]);
 
-        // Aplicar filtro de estado
+        // filtro de estado
         if ($request->has('estado') && $request->estado !== '') {
             $query->whereHas('incidencia', function($q) use ($request) {
                 $q->where('estado', $request->estado);
             });
         }
 
-        // Aplicar filtro de fecha
+        // Filtro de fecha con query de hasta la fecha
         if ($request->has('fecha') && $request->fecha !== '') {
-            $query->whereDate('created_at', '>=', $request->fecha);
+            $query->whereDate('created_at', '<=', $request->fecha);
         }
 
-        $comentarios = $query->orderBy('created_at', 'desc')->get();
+        $comentarios = $query->with(['incidencia'])
+            ->orderBy('created_at', 'desc')
+            ->get();
         
-        return response()->json($comentarios);
+        // Filtrar resultados nulos
+        $comentarios = $comentarios->filter(function($comentario) {
+            return $comentario->incidencia !== null;
+        });
+        
+        return response()->json($comentarios->values());
     }
 
     public function getHistorial()

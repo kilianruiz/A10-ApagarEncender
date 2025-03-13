@@ -4,6 +4,17 @@
 
 @section('content')
 <div class="container mt-4">
+    <!-- Información del usuario y logout -->
+    <div class="user-header mb-4 d-flex justify-content-between align-items-center">
+        <div class="user-info">
+            <h4 class="mb-0">Bienvenido, {{ Auth::user()->name }}</h4>
+        </div>
+        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-outline-danger">Cerrar Sesión</button>
+        </form>
+    </div>
+
     <!-- Pestañas de navegación -->
     <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -95,4 +106,8 @@
 
 @section('scripts')
     <script src="{{ asset('js/crudTecnico.js') }}"></script>
+@endsection
+
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('styles/tecnicos.css') }}">
 @endsection
