@@ -38,20 +38,23 @@
     <button id="btn-crear" name="btn-crear" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createIncidenciaModal">Crear</button>
 
     <ul class="nav nav-tabs" id="incidenciasTabs" role="tablist">
-        <li class="nav-item">
-            <button class="nav-link active" data-status="sin asignar" data-bs-toggle="tab" data-bs-target="#sinAsignar" type="button">Sin Asignar</button>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="todas-tab" data-bs-toggle="tab" data-bs-target="#todas" type="button" role="tab" aria-controls="todas" aria-selected="true" data-status="todas">Todas</button>
         </li>
-        <li class="nav-item">
-            <button class="nav-link" data-status="asignadas" data-bs-toggle="tab" data-bs-target="#asignadas" type="button">Asignadas</button>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sin-asignar-tab" data-bs-toggle="tab" data-bs-target="#sin-asignar" type="button" role="tab" aria-controls="sin-asignar" aria-selected="false" data-status="sin_asignar">Sin Asignar</button>
         </li>
-        <li class="nav-item">
-            <button class="nav-link" data-status="en proceso" data-bs-toggle="tab" data-bs-target="#enProceso" type="button">En Proceso</button>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="asignadas-tab" data-bs-toggle="tab" data-bs-target="#asignadas" type="button" role="tab" aria-controls="asignadas" aria-selected="false" data-status="asignadas">Asignadas</button>
         </li>
-        <li class="nav-item">
-            <button class="nav-link" data-status="resueltas" data-bs-toggle="tab" data-bs-target="#resueltas" type="button">Resueltas</button>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="en-proceso-tab" data-bs-toggle="tab" data-bs-target="#en-proceso" type="button" role="tab" aria-controls="en-proceso" aria-selected="false" data-status="en_proceso">En Proceso</button>
         </li>
-        <li class="nav-item">
-            <button class="nav-link" data-status="cerradas" data-bs-toggle="tab" data-bs-target="#cerradas" type="button">Cerradas</button>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="resueltas-tab" data-bs-toggle="tab" data-bs-target="#resueltas" type="button" role="tab" aria-controls="resueltas" aria-selected="false" data-status="resueltas">Resueltas</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cerradas-tab" data-bs-toggle="tab" data-bs-target="#cerradas" type="button" role="tab" aria-controls="cerradas" aria-selected="false" data-status="cerradas">Cerradas</button>
         </li>
     </ul>
     <table class="table table-striped" id="incidenciasTable">

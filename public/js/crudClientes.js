@@ -1,6 +1,11 @@
 // Función para cargar la tabla de incidencias
-function cargarIncidencias() {
-    fetch('/incidencias')
+function cargarIncidencias(estado = null) {
+    let url = '/incidencias';
+    if (estado) {
+        url = `/incidencias?estado=${estado}`;
+    }
+
+    fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error('No se pudieron cargar las incidencias');
@@ -11,6 +16,15 @@ function cargarIncidencias() {
             const tableBody = document.getElementById('incidenciasTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = ''; // Limpiar la tabla antes de agregar nuevas filas
             
+            if (data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center">No hay incidencias en este estado</td>
+                    </tr>
+                `;
+                return;
+            }
+
             data.forEach(incidencia => {
                 const row = document.createElement('tr');
                 
@@ -50,7 +64,11 @@ function cargarIncidencias() {
         })
         .catch(error => {
             console.error('Error al cargar las incidencias:', error);
-            alert('Error al cargar las incidencias.');
+            Swal.fire({
+                title: 'Error',
+                text: 'Error al cargar las incidencias',
+                icon: 'error'
+            });
         });
 }
 
@@ -179,5 +197,21 @@ function editarIncidencia(id) {
         });
 }
 
-// Cargar la tabla cuando se carga la página
-document.addEventListener('DOMContentLoaded', cargarIncidencias);
+// Función para manejar el cambio de pestañas
+function handleTabChange(event) {
+    const status = event.target.getAttribute('data-status');
+    // Si el estado es 'todas', no enviamos ningún parámetro de estado
+    cargarIncidencias(status === 'todas' ? null : status);
+}
+
+// Agregar event listeners cuando se carga la página
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar todas las incidencias al inicio
+    cargarIncidencias();
+
+    // Agregar event listeners a las pestañas
+    const tabs = document.querySelectorAll('#incidenciasTabs .nav-link');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', handleTabChange);
+    });
+});

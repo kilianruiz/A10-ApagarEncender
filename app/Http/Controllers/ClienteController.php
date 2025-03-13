@@ -27,10 +27,35 @@ class ClienteController extends Controller
     
         return response()->json($incidencia);
     }
-    public function getIncidencias()
+    public function getIncidencias(Request $request)
     {
-        // Obtener todas las incidencias (puedes agregar filtros si es necesario)
-        $incidencias = Incidencia::all();
+        $query = Incidencia::where('user_id', Auth::id());
+
+        // Si se proporciona un estado, filtrar por ese estado
+        if ($request->has('estado') && $request->input('estado') !== null) {
+            $estado = $request->input('estado');
+            
+            // Manejar diferentes casos de estado
+            switch ($estado) {
+                case 'sin_asignar':
+                    $query->where('estado', 'sin_asignar');
+                    break;
+                case 'asignadas':
+                    $query->whereIn('estado', ['asignada']);
+                    break;
+                case 'en_proceso':
+                    $query->where('estado', 'en_proceso');
+                    break;
+                case 'resueltas':
+                    $query->where('estado', 'resuelta');
+                    break;
+                case 'cerradas':
+                    $query->where('estado', 'cerrada');
+                    break;
+            }
+        }
+
+        $incidencias = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json($incidencias);
     }
