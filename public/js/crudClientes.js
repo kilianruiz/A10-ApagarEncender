@@ -27,11 +27,17 @@ function cargarIncidencias() {
                 row.innerHTML = `
                     <td>${incidencia.titulo}</td>
                     <td>${incidencia.descripcion.length > 50 ? incidencia.descripcion.substring(0, 50) + '...' : incidencia.descripcion}</td>
+                    <td>
+                        ${incidencia.imagen ? 
+                            `<img src="/storage/${incidencia.imagen}" alt="Imagen de la incidencia" class="img-thumbnail" style="max-width: 100px; max-height: 100px;">` 
+                            : '<span class="text-muted">Sin imagen</span>'
+                        }
+                    </td>
                     <td>${incidencia.estado}</td>
                     <td class="${prioridadColor}">${incidencia.prioridad.charAt(0).toUpperCase() + incidencia.prioridad.slice(1)}</td>
                     <td>${new Date(incidencia.created_at).toLocaleDateString()} ${new Date(incidencia.created_at).toLocaleTimeString()}</td>
                     <td>
-                        <button class="btn btn-info" data-id="${incidencia.id}" onclick="verIncidencia(${incidencia.id})">
+                        <button class="btn btn-info me-2" data-id="${incidencia.id}" onclick="verIncidencia(${incidencia.id})">
                             <i class="fas fa-search"></i>
                         </button>
                         <button class="btn btn-warning" data-id="${incidencia.id}" onclick="editarIncidencia(${incidencia.id})">
@@ -59,6 +65,12 @@ function verIncidencia(id) {
         })
         .then(data => {
             const details = `
+                ${data.imagen ? 
+                    `<div class="text-center mb-3">
+                        <img src="/storage/${data.imagen}" alt="Imagen de la incidencia" class="img-fluid rounded" style="max-height: 300px;">
+                    </div>` 
+                    : ''
+                }
                 <p><strong>Título:</strong> ${data.titulo}</p>
                 <p><strong>Descripción:</strong> ${data.descripcion}</p>
                 <p><strong>Estado:</strong> ${data.estado}</p>
@@ -72,7 +84,11 @@ function verIncidencia(id) {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al cargar los detalles de la incidencia.');
+            Swal.fire({
+                title: 'Error',
+                text: 'Error al cargar los detalles de la incidencia',
+                icon: 'error'
+            });
         });
 }
 

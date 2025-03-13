@@ -59,6 +59,7 @@
             <tr>
                 <th>Título</th>
                 <th>Descripción</th>
+                <th>Imagen</th>
                 <th>Estado</th>
                 <th>Prioridad</th>
                 <th>Fecha de creación</th>
