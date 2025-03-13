@@ -56,6 +56,47 @@ class IncidenciasController extends Controller
         return response()->json($incidencias);
     }
 
+    // Método para obtener una incidencia específica
+    public function show($id)
+    {
+        $incidencia = Incidencia::findOrFail($id);
+        return response()->json($incidencia);
+    }
+
+    // Método para actualizar una incidencia
+    public function update(Request $request, $id)
+    {
+        try {
+            $incidencia = Incidencia::findOrFail($id);
+            
+            // Validar los datos recibidos
+            $request->validate([
+                'titulo' => 'required|string|max:255',
+                'descripcion' => 'required|string',
+                'prioridad' => 'required|in:alta,media,baja'
+            ]);
+
+            // Actualizar la incidencia
+            $incidencia->update([
+                'titulo' => $request->titulo,
+                'descripcion' => $request->descripcion,
+                'prioridad' => $request->prioridad
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Incidencia actualizada correctamente',
+                'data' => $incidencia
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la incidencia',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     // Pagina para asignar incidencias
     // public function crear()
     // {

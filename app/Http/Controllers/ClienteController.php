@@ -64,10 +64,53 @@ class ClienteController extends Controller
             'subcategoria_id' => 1, // Asegúrate de obtener el valor correcto para el "subcategoria_id"
         ]);
 
-
         // Redirigir con mensaje de éxito
         return redirect()->back()->with('success', 'Incidencia creada exitosamente.');
     }
 
-}
+    public function update(Request $request, $id)
+    {
+        try {
+            // Buscar la incidencia
+            $incidencia = Incidencia::findOrFail($id);
 
+            // Verificar que el usuario autenticado sea el propietario de la incidencia
+            if ($incidencia->user_id !== Auth::id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permiso para actualizar esta incidencia'
+                ], 403);
+            }
+
+            // Validar los datos recibidos
+            $validatedData = $request->validate([
+                'titulo' => 'required|string|max:255',
+                'descripcion' => 'required|string',
+                'prioridad' => 'required|in:alta,media,baja'
+            ]);
+
+            // Actualizar la incidencia
+            $incidencia->fill($validatedData);
+            $incidencia->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Incidencia actualizada correctamente',
+                'data' => $incidencia
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la incidencia',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+}
