@@ -10,6 +10,8 @@ use Database\Seeders\SedeSeeder;
 use Database\Seeders\CategoriaSeeder;
 use Database\Seeders\SubcategoriaSeeder;
 use Database\Seeders\UserSeeder;
+use Database\Seeders\MensajesSeeder;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,7 +29,8 @@ class DatabaseSeeder extends Seeder
             CategoriaSeeder::class,
             SubcategoriaSeeder::class,
             IncidenciasSeeder::class,
-            IncidenciasUsuariosSeeder::class
+            IncidenciasUsuariosSeeder::class,
+            MensajesSeeder::class
         ]);
     }
 }

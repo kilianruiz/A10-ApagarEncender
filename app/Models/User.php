@@ -46,6 +46,16 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Incidencia::class, 'incidencia_usuario');
     }
+    public function mensajesEnviados()
+    {
+        return $this->hasMany(Mensaje::class, 'id_usuario_emisor', 'user_id');
+    }
+
+    public function mensajesRecibidos()
+    {
+        return $this->hasMany(Mensaje::class, 'id_usuario_receptor', 'user_id');
+    }
+
 
     /**
      * The attributes that should be hidden for serialization.
