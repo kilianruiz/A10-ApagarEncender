@@ -80,10 +80,15 @@ class IncidenciasController extends Controller
 
         $user = Auth::user();
 
-        // Verificar si el técnico pertenece al jefe autenticado
-        $tecnico = User::where('id', $request->tecnico_id)
-                       ->where('jefe_id', $user->id)
-                       ->first();
+        // Si el usuario es un administrador, puede asignar a cualquier técnico
+        if ($user->role === 'admin') {
+            $tecnico = User::find($request->tecnico_id);
+        } else {
+            // Verificar si el técnico pertenece al jefe autenticado
+            $tecnico = User::where('id', $request->tecnico_id)
+                           ->where('jefe_id', $user->id)
+                           ->first();
+        }
 
         if (!$tecnico) {
             return response()->json(['error' => 'No puedes asignar a este técnico'], 403);
@@ -102,8 +107,11 @@ class IncidenciasController extends Controller
     {
         $user = Auth::user(); // Obtener el usuario autenticado
 
-        // Buscar técnicos donde el jefe_id coincida con el usuario autenticado
-        $tecnicos = \App\Models\User::where('jefe_id', $user->id)->get();
+        if ($user->role === 'admin') {
+            $tecnicos = \App\Models\User::where('role', 'tecnico')->get(); // Obtener todos los técnicos
+        } else {
+            $tecnicos = \App\Models\User::where('jefe_id', $user->id)->get(); // Solo los técnicos del jefe
+        }
 
         if ($tecnicos->isEmpty()) {
             return response()->json(['error' => 'No tienes técnicos asignados'], 404);

@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <td>${incidencia.comentario}</td>
                             <td>${incidencia.estado}</td>
                             <td>${incidencia.prioridad}</td>
-                            <td>${incidencia.user.name}</td>
+                            <td>${incidencia.user ? incidencia.user.name : 'No asignado'}</td>
                             <td>${incidencia.categoria ? incidencia.categoria.nombre : 'Sin Categoría'}</td>
                             <td>${incidencia.subcategoria ? incidencia.subcategoria.nombre : 'Sin Subcategoría'}</td>
                             <td>${incidencia.feedback}</td>
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(data => {
-                console.log("Técnicos cargados:", data); // Verifica en la consola
+                console.log("Técnicos cargados:", data);
     
                 if (Array.isArray(data)) {
                     data.forEach(tecnico => {
@@ -85,6 +85,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            console.log("Asignando incidencia:", { incidencia_id: incidenciaId, tecnico_id: tecnicoId });
+
             fetch(`/api/asignar-incidencia`, {
                 method: "POST",
                 headers: {
@@ -95,8 +97,12 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .then(response => response.json())
             .then(data => {
-                alert("Incidencia asignada correctamente");
-                cargarIncidencias("sin asignar");
+                if (data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    alert("Incidencia asignada correctamente");
+                    cargarIncidencias("sin asignar");
+                }
             })
             .catch(error => console.error("Error al asignar incidencia:", error));
         }
