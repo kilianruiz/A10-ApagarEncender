@@ -177,6 +177,9 @@
                 <!-- Formulario para crear una incidencia -->
                 <form id="createIncidenciaForm" method="POST" action="{{ route('incidencias.store') }}" enctype="multipart/form-data">
                     @csrf
+                    <!-- Campo oculto para la sede -->
+                    <input type="hidden" name="sede_id" value="{{ Auth::user()->sede_id }}">
+                    
                     <div class="mb-3">
                         <label for="createTitulo" class="form-label">Título</label>
                         <input type="text" class="form-control" id="createTitulo" name="titulo" required>
@@ -184,6 +187,21 @@
                     <div class="mb-3">
                         <label for="createDescripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" id="createDescripcion" name="descripcion" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createCategoria" class="form-label">Categoría</label>
+                        <select class="form-select" id="createCategoria" name="categoria_id" required>
+                            <option value="">Seleccione una categoría</option>
+                            @foreach($categorias as $categoria)
+                                <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createSubcategoria" class="form-label">Subcategoría</label>
+                        <select class="form-select" id="createSubcategoria" name="subcategoria_id" required disabled>
+                            <option value="">Primero seleccione una categoría</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="createPrioridad" class="form-label">Prioridad</label>
@@ -199,7 +217,6 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Crear Incidencia</button>
                 </form>
-                
             </div>
         </div>
     </div>
@@ -209,4 +226,45 @@
 
 @section('scripts')
     <script src="{{ asset('js/crudClientes.js') }}"></script>
+    <script>
+        // Manejar el cambio de categoría
+        document.getElementById('createCategoria').addEventListener('change', function() {
+            const categoriaId = this.value;
+            const subcategoriaSelect = document.getElementById('createSubcategoria');
+            
+            if (categoriaId) {
+                // Habilitar el select de subcategorías
+                subcategoriaSelect.disabled = false;
+                
+                // Hacer la petición para obtener las subcategorías usando la ruta de Laravel
+                fetch("{{ url('/get-subcategorias') }}/" + categoriaId)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error en la red');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Limpiar las opciones actuales
+                        subcategoriaSelect.innerHTML = '<option value="">Seleccione una subcategoría</option>';
+                        
+                        // Agregar las nuevas opciones
+                        data.forEach(subcategoria => {
+                            const option = document.createElement('option');
+                            option.value = subcategoria.id;
+                            option.textContent = subcategoria.nombre;
+                            subcategoriaSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        subcategoriaSelect.innerHTML = '<option value="">Error al cargar subcategorías</option>';
+                    });
+            } else {
+                // Si no hay categoría seleccionada, deshabilitar y limpiar subcategorías
+                subcategoriaSelect.disabled = true;
+                subcategoriaSelect.innerHTML = '<option value="">Primero seleccione una categoría</option>';
+            }
+        });
+    </script>
 @endsection

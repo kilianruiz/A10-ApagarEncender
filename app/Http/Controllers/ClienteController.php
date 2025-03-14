@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Incidencia;
+use App\Models\Categoria;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,9 +13,12 @@ class ClienteController extends Controller
     {
         // Obtener las incidencias asociadas al usuario con el id proporcionado
         $incidencias = Incidencia::where('user_id', $userId)->get();
+        
+        // Obtener todas las categorías
+        $categorias = Categoria::all();
 
-        // Pasar las incidencias a la vista
-        return view('crudClientes.index', compact('incidencias'));
+        // Pasar las incidencias y categorías a la vista
+        return view('crudClientes.index', compact('incidencias', 'categorias'));
     }
     // En ClienteController.php
     public function show($id)
@@ -28,7 +32,7 @@ class ClienteController extends Controller
         return response()->json($incidencia);
     }
     public function getIncidencias(Request $request)
-    {
+    {   
         $query = Incidencia::where('user_id', Auth::id());
 
         // Si se proporciona un estado, filtrar por ese estado
@@ -64,6 +68,17 @@ class ClienteController extends Controller
         return response()->json($incidencias);
     }
 
+    public function getSubcategorias($categoriaId)
+    {
+        try {
+            $categoria = Categoria::findOrFail($categoriaId);
+            $subcategorias = $categoria->subcategorias;
+            return response()->json($subcategorias);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'No se pudieron cargar las subcategorías'], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         // Validar los datos del formulario
@@ -72,7 +87,8 @@ class ClienteController extends Controller
             'descripcion' => 'required|string',
             'prioridad' => 'required|in:alta,media,baja',
             'imagen' => 'nullable|image|max:2048',
-            // Otros campos de validación según sea necesario
+            'subcategoria_id' => 'required|exists:subcategorias,id',
+            'sede_id' => 'required|exists:sedes,id'
         ]);
 
         // Procesar la imagen si es que se sube
@@ -85,12 +101,13 @@ class ClienteController extends Controller
         $incidencia = Incidencia::create([
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
-            'estado' => $request->estado ?? 'sin_asignar', // Aseguramos que 'estado' sea 'sin asignar' si no se proporciona
+            'estado' => 'sin_asignar',
             'prioridad' => $request->prioridad,
-            'user_id' => Auth::id(), // El usuario autenticado
-            'sede_id' => 1, // Asegúrate de obtener el valor correcto para el "sede_id"
+            'user_id' => Auth::id(),
+            'sede_id' => $request->sede_id,
             'imagen' => $imagenPath,
-            'subcategoria_id' => 1, // Asegúrate de obtener el valor correcto para el "subcategoria_id"
+            'categoria_id' => $request->categoria_id,
+            'subcategoria_id' => $request->subcategoria_id,
         ]);
 
         // Redirigir con mensaje de éxito

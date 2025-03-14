@@ -8,7 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Incidencia extends Model
 {
 
-    protected $fillable = ['titulo', 'descripcion', 'comentario', 'estado', 'prioridad', 'user_id', 'sede_id', 'imagen', 'categoria_id', 'subcategoria_id'];
+    protected $fillable = [
+        'titulo', 
+        'descripcion', 
+        'comentario', 
+        'estado', 
+        'prioridad', 
+        'user_id', 
+        'sede_id', 
+        'imagen', 
+        'subcategoria_id',
+        'feedback'
+    ];
 
     public function user()
     {

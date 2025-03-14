@@ -56,5 +56,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/incidencias', [ClienteController::class, 'getIncidencias'])->name('incidencias.index');
         Route::post('/incidencias/crear', [ClienteController::class, 'store'])->name('incidencias.store');
         Route::put('/incidencia/{id}', [ClienteController::class, 'update'])->name('incidencias.update');
+        Route::get('/get-subcategorias/{categoria}', [ClienteController::class, 'getSubcategorias'])->name('get.subcategorias');
     });
 });
