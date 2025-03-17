@@ -15,7 +15,6 @@ $(document).ready(function() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data); // Verifica los datos recibidos
             if (data.usuarios && Array.isArray(data.usuarios)) {
                 let tabla = '';
                 data.usuarios.forEach(user => {
@@ -23,7 +22,7 @@ $(document).ready(function() {
                     str += `<td>${user.email}</td>`;
                     str += `<td>${user.role ? user.role.nombre : 'Sin rol'}</td>`;
                     str += `<td>${user.sede ? user.sede.nombre : 'Sin sede'}</td>`;
-                    str += `<td class="d-flex flex-row" style="gap:20px;">`;
+                    str += `<td class="d-flex flex-row justify-content-center" style="gap:10px;">`;
                     if (user.role_id !== 1) { // Suponiendo que el rol de administrador tiene el ID 1
                         str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})">Editar</button>`;
                     } else {
@@ -49,13 +48,13 @@ $(document).ready(function() {
                 // Generar elementos de paginación
                 let pagination = '<nav aria-label="Page navigation example"><ul class="pagination">';
                 if (data.pagination.current_page > 1) {
-                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page - 1})">Previous</a></li>`;
+                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page - 1})">Anterior</a></li>`;
                 }
                 for (let i = 1; i <= data.pagination.last_page; i++) {
                     pagination += `<li class="page-item ${i === data.pagination.current_page ? 'active' : ''}"><a class="page-link" href="#" onclick="ListarProductos(${i})">${i}</a></li>`;
                 }
                 if (data.pagination.current_page < data.pagination.last_page) {
-                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page + 1})">Next</a></li>`;
+                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page + 1})">Siguiente</a></li>`;
                 }
                 pagination += '</ul></nav>';
                 document.getElementById('paginationControls').innerHTML = pagination;
@@ -138,7 +137,7 @@ $(document).ready(function() {
         const formdata = new FormData(this);
         formdata.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
 
-        fetch("{{ route('crudAdmin.store') }}", {
+        fetch("/admin/create", {
             method: 'POST',
             body: formdata
         })
@@ -201,16 +200,15 @@ $(document).ready(function() {
     });
 });
 
-    // Función para eliminar un usuario
     window.Eliminar = function(id) {
         Swal.fire({
-            title: 'Está seguro de eliminar?',
+            title: '¿Está seguro de eliminar este usuario?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Si!',
-            cancelButtonText: 'NO'
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch(`/admin/users/${id}`, {
@@ -222,22 +220,34 @@ $(document).ready(function() {
                 })
                 .then(response => response.json())
                 .then(responseText => {
-                    if (responseText.message === "Usuario e incidencias eliminados exitosamente.") {
+                    if (responseText.message) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Usuario e incidencias eliminados exitosamente',
+                            title: 'Usuario eliminado',
+                            text: responseText.message,
                             showConfirmButton: false,
-                            timer: 1100
+                            timer: 1500
                         });
+
+                        // Recargar la lista de usuarios después de eliminar
                         ListarProductos();
+                    } else {
+                        throw new Error(responseText.error || 'Error desconocido');
                     }
                 })
                 .catch(error => {
-                    console.error('Error al eliminar el usuario:', error);
+                    console.error('Error al eliminar usuario:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo eliminar el usuario. Verifique la consola para más detalles.',
+                        confirmButtonText: 'Aceptar'
+                    });
                 });
             }
         });
     };
+
 
     function verificarIncidencias(userId, buttonElement) {
         fetch(`/admin/users/${userId}/incidencias`, {

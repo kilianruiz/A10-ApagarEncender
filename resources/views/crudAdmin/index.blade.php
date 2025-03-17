@@ -1,10 +1,12 @@
 @extends('../layouts.layout')
 
+
 @section('content')
-<div class="container">
+<link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+<div class="contenedor">
     <h1>Gestión de Usuarios</h1>
     <div class="mb-3">
-        <input type="text" id="filter" placeholder="Buscar usuarios por nombre..." class="form-control mb-2">
+        <input type="text" id="filter" placeholder="Buscar usuarios por nombre..." class="mb-2">
         <input type="text" id="filterEmail" placeholder="Buscar usuarios por email..." class="form-control mb-2">
         <select id="filterRole" class="form-control mb-2">
             <option value="">Filtrar por rol</option>
@@ -20,10 +22,10 @@
                 <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
             @endforeach
         </select>
-        <button id="clearFilters" class="btn btn-secondary mb-3">Limpiar Filtros</button>
+        <button id="clearFilters" class="boton-secundario mb-3">Limpiar Filtros</button>
     </div>
-    <button id="openUserModal" class="btn btn-primary mb-3">Crear Usuario</button>
-    <table class="table">
+    <button id="openUserModal" class="boton-principal mb-3 ">Crear Usuario</button>
+    <table class="table text-center">
         <thead>
             <tr>
                 <th>Nombre</th>
@@ -47,9 +49,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Crear Usuario</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body">
                 <form id="createUserForm">
@@ -86,7 +85,7 @@
                                 <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
                             @endforeach
                         </select>
-                    <button type="submit" class="btn btn-primary">Crear</button>
+                    <button type="submit" class="boton-principal">Crear</button>
                 </form>
             </div>
         </div>
@@ -99,9 +98,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Editar Usuario</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body">
                 <form id="editUserForm">
@@ -127,7 +123,9 @@
                         <select id="editRoleId" name="role_id" class="form-control" required>
                             <option value="">Seleccione un rol</option>
                             @foreach($roles as $role)
+                            @if($role->id !== 1)
                                 <option value="{{ $role->id }}">{{ $role->nombre }}</option>
+                            @endif
                             @endforeach
                         </select>
                     </div>
@@ -140,7 +138,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="submit" class="boton-principal">Guardar</button>
                 </form>
             </div>
         </div>
@@ -160,7 +158,7 @@
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="boton-secundario" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -169,4 +167,5 @@
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('js/crudAdmin.js') }}"></script>
+<script src="{{ asset('js/validacionesAdmin.js') }}"></script>
 @endsection

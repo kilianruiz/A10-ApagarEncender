@@ -25,8 +25,7 @@ Route::middleware(['auth'])->group(function () {
     //rutas admin
     Route::controller(AdminUserController::class)->group(function () {
         Route::get('/admin', [AdminUserController::class, 'index'])->name('crudAdmin.index');
-        Route::get('/admin/create', [AdminUserController::class, 'create'])->name('crudAdmin.create');
-        Route::post('/admin', [AdminUserController::class, 'store'])->name('crudAdmin.store');
+        Route::post('/admin/create', [AdminUserController::class, 'store'])->name('crudAdmin.store');
         Route::get('/admin/{id}/edit', [AdminUserController::class, 'edit'])->name('crudAdmin.edit');
         Route::put('/admin/users/{id}', [AdminUserController::class, 'update'])->name('crudAdmin.update');
         Route::delete('/admin/{id}', [AdminUserController::class, 'destroy'])->name('crudAdmin.destroy');

@@ -1,0 +1,113 @@
+/* Estilo general del CRUD */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F4F4F4; /* Gris claro */
+    color: #333333; /* Gris oscuro */
+    margin: 0;
+    padding: 0;
+}
+
+/* Contenedor principal */
+.contenedor {
+    max-width: 900px;
+    margin: 50px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+h1 {
+    text-align: center;
+    color: #0088A8; /* Azul turquesa */
+    margin-bottom: 20px;
+}
+
+/* Inputs y selects */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Botones */
+.boton-principal {
+    background-color: #0088A8; /* Azul turquesa */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.boton-principal:hover {
+    background-color: #00728C; /* Azul más oscuro */
+}
+
+.boton-secundario {
+    background-color: #cccccc;
+    color: #333;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.boton-secundario:hover {
+    background-color: #b3b3b3;
+}
+
+/* Tabla de usuarios */
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.tabla-cabecera, .tabla-celda {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.tabla-cabecera {
+    background-color: #0088A8; /* Azul turquesa */
+    color: white;
+}
+
+.tabla-fila:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Estilo para los modales */
+.modal-contenido {
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.modal-encabezado {
+    background-color: #0088A8; /* Azul turquesa */
+    color: white;
+    border-radius: 10px 10px 0 0;
+}
+
+.modal-pie {
+    text-align: right;
+}
+
+/* Botón de cerrar modal */
+.cerrar {
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.cerrar:hover {
+    color: #cccccc;
+}
