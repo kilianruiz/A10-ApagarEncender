@@ -91,9 +91,6 @@ function cargarComentarios(filtros = {}) {
                                     ${comentario.incidencia.estado !== 'en proceso' ? 'disabled' : ''}>
                                 Resolver
                             </button>
-                            <a href="#" class="btn btn-info btn-sm" title="Comunicar con usuario">
-                                <i class="fas fa-comments"></i>
-                            </a>
                         </div>
                     </td>
                 </tr>
