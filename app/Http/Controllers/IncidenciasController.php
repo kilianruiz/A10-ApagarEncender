@@ -42,36 +42,84 @@ class IncidenciasController extends Controller
     // Obtener incidencias por estado a través de AJAX
     public function getByStatus(Request $request)
     {
-        $estado = str_replace("_", " ", $request->input('estado'));
-
-        if (!$estado) {
-            return response()->json(['error' => 'Estado no proporcionado'], 400);
-        }
-
         try {
-            $user = Auth::user();
-            $sede_id = $user->sede_id;
+            $estado = str_replace('_', ' ', $request->query('estado'));
+            $titulo = $request->query('titulo');
+            $prioridad = $request->query('prioridad');
+            $tecnico_id = $request->query('tecnico_id');
+            $sede_id = Auth::user()->sede_id;
 
-            // Obtener las incidencias con sus relaciones
-            $query = Incidencia::with(['user', 'categoria', 'subcategoria'])
-                            ->with(['tecnicoAsignado' => function($query) {
-                                $query->select('users.id', 'users.name');
-                            }])
-                            ->where('estado', $estado);
+            $query = Incidencia::with(['user', 'categoria', 'subcategoria', 'usuarios']);
 
-            if ($sede_id !== null) {
+            // Aplicar filtro por estado
+            $query->where('estado', $estado);
+
+            // Filtrar por sede si el usuario tiene una asignada
+            if ($sede_id) {
                 $query->where('sede_id', $sede_id);
+            }
+
+            // Filtrar por título si se proporciona
+            if ($titulo) {
+                $query->where('titulo', 'LIKE', "%{$titulo}%");
+            }
+
+            // Filtrar por prioridad si se proporciona
+            if ($prioridad) {
+                $query->where('prioridad', $prioridad);
+            }
+
+            // Filtrar por técnico si se proporciona
+            if ($tecnico_id) {
+                $query->whereHas('usuarios', function($query) use ($tecnico_id) {
+                    $query->where('users.id', $tecnico_id);
+                });
             }
 
             $incidencias = $query->get();
 
+            // Log para debugging
+            \Log::info('Query SQL:', [
+                'sql' => $query->toSql(),
+                'bindings' => $query->getBindings(),
+                'estado' => $estado,
+                'titulo' => $titulo,
+                'prioridad' => $prioridad,
+                'tecnico_id' => $tecnico_id,
+                'resultados' => count($incidencias)
+            ]);
+
+            // Transformar los datos para la respuesta
+            $incidencias = $incidencias->map(function ($incidencia) {
+                return [
+                    'id' => $incidencia->id,
+                    'titulo' => $incidencia->titulo,
+                    'descripcion' => $incidencia->descripcion,
+                    'comentario' => $incidencia->comentario,
+                    'estado' => $incidencia->estado,
+                    'prioridad' => $incidencia->prioridad,
+                    'user' => $incidencia->user ? $incidencia->user->name : null,
+                    'categoria' => $incidencia->categoria ? $incidencia->categoria->nombre : null,
+                    'subcategoria' => $incidencia->subcategoria ? $incidencia->subcategoria->nombre : null,
+                    'feedback' => $incidencia->feedback,
+                    'created_at' => $incidencia->created_at,
+                    'tecnico_asignado' => $incidencia->usuarios->map(function ($usuario) {
+                        return [
+                            'id' => $usuario->id,
+                            'name' => $usuario->name
+                        ];
+                    })
+                ];
+            });
+
             return response()->json($incidencias);
         } catch (\Exception $e) {
             \Log::error('Error en getByStatus:', [
-                'error' => $e->getMessage(),
-                'estado' => $estado
+                'mensaje' => $e->getMessage(),
+                'linea' => $e->getLine(),
+                'archivo' => $e->getFile()
             ]);
-            return response()->json(['error' => 'Error al obtener incidencias: ' . $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -138,20 +186,4 @@ class IncidenciasController extends Controller
 
         return response()->json($tecnicos);
     }
-
-    // Pagina para asignar incidencias
-    // public function crear()
-    // {
-    //     return view('crear_incidencia');
-    // }
-
-    // Pagina para ver en detalle una incidencia
-    // public function ver($id)
-    // {
-    //     // Buscar la incidencia por su ID
-    //     $id_incidencia = Incidencia::findOrFail($id);
-
-    //     // Pasar la incidencia a la vista
-    //     return view('ver_incidencia', ['incidencia' => $id_incidencia]);
-    // }
 }

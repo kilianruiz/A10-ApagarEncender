@@ -46,6 +46,13 @@ class Incidencia extends Model
         return $this->belongsToMany(User::class, 'incidencia_usuario', 'incidencia_id', 'user_id')
                     ->orderBy('incidencia_usuario.created_at', 'desc');
     }
+
+    public function usuarios()
+    {
+        return $this->belongsToMany(User::class, 'incidencia_usuario', 'incidencia_id', 'user_id')
+                    ->withTimestamps();
+    }
+
     public function mensajes()
     {
         return $this->hasMany(Mensaje::class, 'incidencia_id');

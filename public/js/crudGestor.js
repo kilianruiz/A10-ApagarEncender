@@ -1,10 +1,89 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Cargar incidencias por estado
-    function cargarIncidencias(estado) {
-        let estadoNormalizado = estado.replace(/\s/g, "_");
-        console.log('Cargando incidencias para estado:', estadoNormalizado);
+    let filtrosActuales = {};
 
-        fetch(`${window.location.origin}/api/incidencias?estado=${estadoNormalizado}`, {
+    // Inicializar eventos de filtros
+    const estados = ['sin_asignar', 'asignada', 'en_proceso', 'resuelta', 'cerrada'];
+    estados.forEach(estado => {
+        // Inicializar filtros para cada estado
+        filtrosActuales[estado] = {
+            titulo: '',
+            prioridad: '',
+            tecnico_id: ''
+        };
+
+        // Evento para filtro de título
+        const filtroTitulo = document.getElementById(`filtroTitulo-${estado}`);
+        if (filtroTitulo) {
+            filtroTitulo.addEventListener('input', () => {
+                filtrosActuales[estado].titulo = filtroTitulo.value;
+                cargarIncidencias(estado);
+            });
+        }
+
+        // Evento para filtro de prioridad
+        const filtroPrioridad = document.getElementById(`filtroPrioridad-${estado}`);
+        if (filtroPrioridad) {
+            filtroPrioridad.addEventListener('change', () => {
+                filtrosActuales[estado].prioridad = filtroPrioridad.value;
+                cargarIncidencias(estado);
+            });
+        }
+
+        // Evento para filtro de técnico (excepto en sin_asignar)
+        if (estado !== 'sin_asignar') {
+            const filtroTecnico = document.getElementById(`filtroTecnico-${estado}`);
+            if (filtroTecnico) {
+                filtroTecnico.addEventListener('change', () => {
+                    filtrosActuales[estado].tecnico_id = filtroTecnico.value;
+                    cargarIncidencias(estado);
+                });
+            }
+        }
+    });
+
+    // Función para limpiar filtros
+    window.limpiarFiltros = function(estado) {
+        // Resetear valores de los filtros en la UI
+        const filtroTitulo = document.getElementById(`filtroTitulo-${estado}`);
+        const filtroPrioridad = document.getElementById(`filtroPrioridad-${estado}`);
+        if (filtroTitulo) filtroTitulo.value = '';
+        if (filtroPrioridad) filtroPrioridad.value = '';
+
+        if (estado !== 'sin_asignar') {
+            const filtroTecnico = document.getElementById(`filtroTecnico-${estado}`);
+            if (filtroTecnico) filtroTecnico.value = '';
+        }
+
+        // Resetear filtros actuales
+        filtrosActuales[estado] = {
+            titulo: '',
+            prioridad: '',
+            tecnico_id: ''
+        };
+
+        // Recargar incidencias
+        cargarIncidencias(estado);
+    };
+
+    // Función modificada para cargar incidencias con filtros
+    function cargarIncidencias(estado) {
+        console.log('Estado recibido:', estado);
+        let estadoNormalizado = estado.replace(/\s/g, "_");
+        console.log('Estado normalizado:', estadoNormalizado);
+
+        // Construir URL con filtros
+        let url = new URL(`${window.location.origin}/api/incidencias`);
+        url.searchParams.append('estado', estadoNormalizado);
+
+        // Añadir filtros activos
+        const filtros = filtrosActuales[estadoNormalizado];
+        if (filtros.titulo) url.searchParams.append('titulo', filtros.titulo);
+        if (filtros.prioridad) url.searchParams.append('prioridad', filtros.prioridad);
+        if (filtros.tecnico_id) url.searchParams.append('tecnico_id', filtros.tecnico_id);
+
+        console.log('URL de la petición:', url.toString());
+
+        fetch(url, {
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
@@ -30,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             tabla.innerHTML = data.length === 0
-                ? "<tr><td colspan='12'>No hay incidencias en este estado.</td></tr>"
+                ? `<tr><td colspan='12'>No hay incidencias ${estadoNormalizado.replace(/_/g, ' ')}</td></tr>`
                 : "";
 
             data.forEach(incidencia => {
@@ -45,13 +124,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 fila.innerHTML = `
                     <td>${incidencia.id}</td>
                     <td>${incidencia.titulo}</td>
-                    <td>${incidencia.descripcion || ''}</td>
+                    <td>${incidencia.descripcion}</td>
                     <td>${incidencia.comentario || ''}</td>
                     <td>${incidencia.estado}</td>
                     <td>${incidencia.prioridad || ''}</td>
-                    <td>${incidencia.user ? incidencia.user.name : 'No asignado'}</td>
-                    <td>${incidencia.categoria ? incidencia.categoria.nombre : 'Sin Categoría'}</td>
-                    <td>${incidencia.subcategoria ? incidencia.subcategoria.nombre : 'Sin Subcategoría'}</td>
+                    <td>${incidencia.user}</td>
+                    <td>${incidencia.categoria}</td>
+                    <td>${incidencia.subcategoria}</td>
                     <td>${incidencia.feedback || ''}</td>
                     <td>${new Date(incidencia.created_at).toLocaleString('es')}</td>
                     <td class="text-center">
@@ -62,6 +141,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     </td>
                 `;
                 tabla.appendChild(fila);
+
+                // Añadir evento al botón si es una incidencia sin asignar
+                if (incidencia.estado === 'sin asignar') {
+                    const btnAsignar = fila.querySelector('.btn-abrir-modal');
+                    if (btnAsignar) {
+                        btnAsignar.addEventListener('click', function() {
+                            incidenciaIdInput.value = incidencia.id;
+                            cargarTecnicos();
+                            modal.style.display = "flex";
+                            modal.classList.add("show");
+                            document.body.style.overflow = 'hidden';
+                        });
+                    }
+                }
             });
         })
         .catch(error => {
@@ -73,22 +166,52 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Abrir el modal
+    // Cargar técnicos en el select
+    function cargarTecnicos() {
+        fetch("/api/tecnicos")
+            .then(response => response.json())
+            .then(tecnicos => {
+                // Llenar el select del modal
+                tecnicoSelect.innerHTML = '<option value="">Seleccione un técnico</option>';
+                tecnicos.forEach(tecnico => {
+                    let option = document.createElement("option");
+                    option.value = tecnico.id;
+                    option.textContent = tecnico.name;
+                    tecnicoSelect.appendChild(option);
+                });
+
+                // Llenar los selects de filtros
+                estados.forEach(estado => {
+                    if (estado !== 'sin_asignar') {
+                        const filtroTecnico = document.getElementById(`filtroTecnico-${estado}`);
+                        if (filtroTecnico) {
+                            filtroTecnico.innerHTML = '<option value="">Todos los técnicos</option>';
+                            tecnicos.forEach(tecnico => {
+                                let option = document.createElement("option");
+                                option.value = tecnico.id;
+                                option.textContent = tecnico.name;
+                                filtroTecnico.appendChild(option);
+                            });
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Error al cargar técnicos:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudieron cargar los técnicos',
+                    confirmButtonColor: '#3085d6'
+                });
+            });
+    }
+
+    // Inicialización del modal y sus elementos
     const modal = document.getElementById("modal-asignar");
     const formAsignar = document.getElementById("form-asignar");
     const tecnicoSelect = document.getElementById("tecnico-select");
     const incidenciaIdInput = document.getElementById("incidencia-id");
-
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("btn-abrir-modal")) {
-            let incidenciaId = event.target.getAttribute("data-id");
-            incidenciaIdInput.value = incidenciaId;
-            cargarTecnicos();
-            modal.style.display = "flex";
-            modal.classList.add("show");
-            document.body.style.overflow = 'hidden';
-        }
-    });
 
     // Cerrar el modal
     document.querySelector(".btn-cancelar").addEventListener("click", function () {
@@ -102,30 +225,6 @@ document.addEventListener("DOMContentLoaded", function () {
             modal.style.display = "none";
             document.body.style.overflow = 'auto';
         }, 200);
-    }
-
-    // Cargar técnicos en el select
-    function cargarTecnicos() {
-        fetch("/api/tecnicos")
-            .then(response => response.json())
-            .then(tecnicos => {
-                tecnicoSelect.innerHTML = '<option value="">Seleccione un técnico</option>';
-                tecnicos.forEach(tecnico => {
-                    let option = document.createElement("option");
-                    option.value = tecnico.id;
-                    option.textContent = tecnico.name;
-                    tecnicoSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error("Error al cargar técnicos:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'No se pudieron cargar los técnicos',
-                    confirmButtonColor: '#3085d6'
-                });
-            });
     }
 
     // Manejar el envío del formulario
@@ -189,13 +288,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Cargar las incidencias iniciales
-    cargarIncidencias(document.querySelector(".nav-link.active").getAttribute("data-status"));
-
-    // Cambiar de pestaña
-    document.querySelectorAll(".nav-link").forEach(tab => {
-        tab.addEventListener("shown.bs.tab", function (event) {
-            cargarIncidencias(event.target.getAttribute("data-status"));
+    // Cargar las incidencias iniciales y los técnicos
+    cargarTecnicos();
+    
+    // Inicializar eventos de las pestañas
+    document.querySelectorAll('#incidenciasTabs .nav-link').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const estado = this.getAttribute('data-status');
+            console.log('Tab clicked, estado:', estado);
+            cargarIncidencias(estado);
         });
     });
+
+    // Cargar el estado inicial
+    const tabActivo = document.querySelector('#incidenciasTabs .nav-link.active');
+    if (tabActivo) {
+        const estadoInicial = tabActivo.getAttribute('data-status');
+        console.log('Cargando estado inicial:', estadoInicial);
+        cargarIncidencias(estadoInicial);
+    }
 });

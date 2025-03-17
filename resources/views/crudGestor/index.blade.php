@@ -38,6 +38,25 @@
     <div class="tab-content" id="myTabContent">
         <!-- Pestaña Sin Asignar -->
         <div class="tab-pane fade show active" id="sinAsignar" role="tabpanel">
+            <!-- Filtros para Sin Asignar -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="filtroTitulo-sin_asignar" class="form-label">Filtrar por Título:</label>
+                    <input type="text" id="filtroTitulo-sin_asignar" class="form-control" placeholder="Buscar por título...">
+                </div>
+                <div class="col-md-4">
+                    <label for="filtroPrioridad-sin_asignar" class="form-label">Filtrar por Prioridad:</label>
+                    <select id="filtroPrioridad-sin_asignar" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="baja">Baja</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-secondary" onclick="limpiarFiltros('sin_asignar')">Limpiar Filtros</button>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
@@ -63,6 +82,31 @@
 
         <!-- Pestaña Asignadas -->
         <div class="tab-pane fade" id="asignada" role="tabpanel">
+            <!-- Filtros para Asignadas -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="filtroTitulo-asignada" class="form-label">Filtrar por Título:</label>
+                    <input type="text" id="filtroTitulo-asignada" class="form-control" placeholder="Buscar por título...">
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroPrioridad-asignada" class="form-label">Filtrar por Prioridad:</label>
+                    <select id="filtroPrioridad-asignada" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="baja">Baja</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroTecnico-asignada" class="form-label">Filtrar por Técnico:</label>
+                    <select id="filtroTecnico-asignada" class="form-select">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-secondary" onclick="limpiarFiltros('asignada')">Limpiar Filtros</button>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
@@ -88,6 +132,31 @@
 
         <!-- Pestaña En Proceso -->
         <div class="tab-pane fade" id="enProceso" role="tabpanel">
+            <!-- Filtros para En Proceso -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="filtroTitulo-en_proceso" class="form-label">Filtrar por Título:</label>
+                    <input type="text" id="filtroTitulo-en_proceso" class="form-control" placeholder="Buscar por título...">
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroPrioridad-en_proceso" class="form-label">Filtrar por Prioridad:</label>
+                    <select id="filtroPrioridad-en_proceso" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="baja">Baja</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroTecnico-en_proceso" class="form-label">Filtrar por Técnico:</label>
+                    <select id="filtroTecnico-en_proceso" class="form-select">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-secondary" onclick="limpiarFiltros('en_proceso')">Limpiar Filtros</button>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
@@ -113,6 +182,31 @@
 
         <!-- Pestaña Resueltas -->
         <div class="tab-pane fade" id="resuelta" role="tabpanel">
+            <!-- Filtros para Resueltas -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="filtroTitulo-resuelta" class="form-label">Filtrar por Título:</label>
+                    <input type="text" id="filtroTitulo-resuelta" class="form-control" placeholder="Buscar por título...">
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroPrioridad-resuelta" class="form-label">Filtrar por Prioridad:</label>
+                    <select id="filtroPrioridad-resuelta" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="baja">Baja</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroTecnico-resuelta" class="form-label">Filtrar por Técnico:</label>
+                    <select id="filtroTecnico-resuelta" class="form-select">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-secondary" onclick="limpiarFiltros('resuelta')">Limpiar Filtros</button>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
@@ -138,6 +232,31 @@
 
         <!-- Pestaña Cerradas -->
         <div class="tab-pane fade" id="cerrada" role="tabpanel">
+            <!-- Filtros para Cerradas -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="filtroTitulo-cerrada" class="form-label">Filtrar por Título:</label>
+                    <input type="text" id="filtroTitulo-cerrada" class="form-control" placeholder="Buscar por título...">
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroPrioridad-cerrada" class="form-label">Filtrar por Prioridad:</label>
+                    <select id="filtroPrioridad-cerrada" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="baja">Baja</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filtroTecnico-cerrada" class="form-label">Filtrar por Técnico:</label>
+                    <select id="filtroTecnico-cerrada" class="form-select">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-secondary" onclick="limpiarFiltros('cerrada')">Limpiar Filtros</button>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
