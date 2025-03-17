@@ -36,18 +36,20 @@ Route::middleware(['auth'])->group(function () {
 
     // rutas incidencias
     Route::controller(IncidenciasController::class)->group(function () {
-        // Ruta incidencias
-        Route::get('/gestor', [IncidenciasController::class, 'index']);
-        Route::get('/gestor/incidencias', [IncidenciasController::class, 'getByStatus'])->name('gestor.getByStatus');
-
-        Route::get('/incidencias/crear', [IncidenciasController::class, 'crear']);
-        Route::get('/incidencias/{id}', [IncidenciasController::class, 'ver'])->name('incidencias.ver');
-    
+        // Ruta para el gestor, se pasa el nombre de la sede en la URL
+        Route::get('/gestor/{nombre_sede}', [IncidenciasController::class, 'index']);
+        
+        // Ruta para obtener incidencias por estado (usado en AJAX)
+        Route::get('/api/incidencias', [IncidenciasController::class, 'getByStatus']);
     });
-
+    
     //rutas tecnicos
     Route::controller(TecnicoController::class)->group(function () {
         Route::get('/tecnicos', [TecnicoController::class, 'index'])->name('crudTecnico');
+        Route::get('/tecnicos/comentarios', [TecnicoController::class, 'getComentarios'])->name('tecnicos.comentarios');
+        Route::get('/tecnicos/historial', [TecnicoController::class, 'getHistorial'])->name('tecnicos.historial');
+        Route::post('/tecnicos/resolver-incidencia', [TecnicoController::class, 'resolverIncidencia'])->name('tecnicos.resolver');
+        Route::post('/tecnicos/cambiar-estado', [TecnicoController::class, 'cambiarEstado'])->name('tecnicos.cambiarEstado');
     });
     //rutas clientes
     Route::controller(ClienteController::class)->group(function () {

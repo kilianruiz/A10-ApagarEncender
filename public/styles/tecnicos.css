@@ -1,0 +1,218 @@
+.container {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+/* Estilos mejorados para las pestañas */
+.nav-tabs {
+    border-bottom: none;
+    gap: 1rem;
+    padding: 0 0.5rem;
+}
+
+.nav-tabs .nav-link {
+    color: #6B7280;
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    background-color: #F3F4F6;
+    font-size: 0.9rem;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: #E5E7EB;
+    color: #374151;
+}
+
+.nav-tabs .nav-link.active {
+    color: white;
+    background-color: #4a90e2;
+    border: none;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
+}
+
+/* Estilos mejorados para los filtros */
+.form-label {
+    color: #374151;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.form-select, .form-control {
+    padding: 0.6rem 0.8rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    background-color: #F9FAFB;
+}
+
+.form-select:focus, .form-control:focus {
+    outline: none;
+    border-color: #4a90e2;
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+}
+
+/* Estilos mejorados para las tablas */
+.table {
+    margin-top: 1rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.table thead {
+    background-color: #F8FAFC;
+}
+
+.table th {
+    color: #1F2937;
+    font-weight: 600;
+    padding: 0.8rem;
+    border-bottom: 2px solid #E5E7EB;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+.table td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #F3F4F6;
+    color: #4B5563;
+    font-size: 0.9rem;
+}
+
+.table tbody tr:hover {
+    background-color: #F9FAFB;
+}
+
+/* Estilos mejorados para botones */
+.btn {
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-secondary {
+    background-color: #6B7280;
+    border: none;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.2);
+}
+
+.btn-secondary:hover {
+    background-color: #4B5563;
+    transform: translateY(-1px);
+}
+
+/* Estilos mejorados para alertas */
+.alert {
+    border-radius: 8px;
+    padding: 0.8rem;
+    margin-top: 0.8rem;
+    border: none;
+    background-color: #EFF6FF;
+    color: #1E40AF;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.alert-info {
+    background-color: #F0F9FF;
+    color: #0C4A6E;
+    border-left: 4px solid #0EA5E9;
+}
+
+/* Mantener el responsive existente pero con mejoras */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 1.5rem;
+        margin: 1rem;
+        border-radius: 12px;
+    }
+
+    /* Mantener ocultas las columnas ID e Imagen */
+    .table th:nth-child(1),
+    .table td:nth-child(1),
+    .table th:nth-child(4),
+    .table td:nth-child(4) {
+        display: none;
+    }
+
+    .table th, .table td {
+        padding: 1rem 0.8rem;
+    }
+
+    .nav-tabs {
+        gap: 0.5rem;
+    }
+
+    .nav-tabs .nav-link {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    /* Mejorar la disposición de los filtros */
+    .col-md-4 {
+        margin-bottom: 1.2rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+
+    .table {
+        font-size: 0.85rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Estilos para el header del usuario */
+.user-header {
+    background-color: #F8FAFC;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.user-header h4 {
+    color: #1F2937;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.btn-outline-danger {
+    border: 2px solid #DC2626;
+    color: #DC2626;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: #DC2626;
+    color: white;
+    transform: translateY(-1px);
+} 

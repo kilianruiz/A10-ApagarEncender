@@ -9,7 +9,7 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // Validar datos del formulario
+        // Validar los datos del formulario
         $request->validate([
             'nombre_usuario' => 'required|string',
             'pwd' => 'required',
@@ -19,21 +19,32 @@ class AuthController extends Controller
         if (Auth::attempt(['name' => $request->nombre_usuario, 'password' => $request->pwd])) {
             // Si las credenciales son válidas, regenera la sesión para protegerla contra ataques
             $request->session()->regenerate();
-        
+
             $user = Auth::user(); // Obtener el usuario autenticado
+
+            // Comprobar el rol del usuario y redirigir según corresponda
             if ($user->role_id == 1) {
                 return redirect('/crudAdmin');
             } elseif ($user->role_id == 2) {
                 return redirect('/clientes/' . $user->id); // Usar el ID del usuario autenticado
             } elseif ($user->role_id == 3) {
-                return redirect('/gestor');
+                // Obtener la sede del usuario autenticado
+                $sede = $user->sede;  // Asegúrate de tener la relación de "sede" en el modelo User
+
+                if ($sede) {
+                    // Redirigir a la página del gestor con el nombre de la sede
+                    return redirect('/gestor/' . $sede->localización);
+                } else {
+                    // Si no tiene sede, redirigir a una página de error
+                    return redirect('/error-autenticacion');
+                }
             } elseif ($user->role_id == 4) {
                 return redirect('/tecnicos');
             } else {
+                // Si no es ninguno de los roles conocidos, redirigir a una página de error
                 return redirect('/error-autenticacion');
             }
         }
-        
 
         // Si la autenticación falla, retornar con error
         return back()->withErrors(['nombre_usuario' => 'Las credenciales no son correctas']);
@@ -43,12 +54,14 @@ class AuthController extends Controller
     {
         // Cerrar la sesión
         Auth::logout();
+
         // Invalidar la sesión para evitar que se reutilice
         $request->session()->invalidate();
+
         // Generar un nuevo token para prevenir ataques
         $request->session()->regenerateToken();
+
         // Redirigir al login
         return redirect('/login');
     }
 }
-
