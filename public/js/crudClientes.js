@@ -124,7 +124,7 @@ function verIncidencia(id) {
                 <p><strong>Estado:</strong> ${data.estado}</p>
                 <p><strong>Prioridad:</strong> ${data.prioridad}</p>
                 <p><strong>Fecha de creación:</strong> ${new Date(data.created_at).toLocaleDateString()} ${new Date(data.created_at).toLocaleTimeString()}</p>
-                <p><strong>Comentarios:</strong> ${data.comentarios || 'No hay comentarios'}</p>
+                <p><strong>Comentarios:</strong> ${data.feedback || 'No hay comentarios'}</p>
             `;
             document.getElementById('incidenciaDetails').innerHTML = details;
             var modal = new bootstrap.Modal(document.getElementById('viewIncidenciaModal'));
