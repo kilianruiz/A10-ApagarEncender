@@ -6,7 +6,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Lista de Incidencias</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="{{ asset('js/crudGestor.js') }}"></script>
+    <link href="{{ asset('styles/incidencias.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/crudGestor.js') }}" defer></script>
 </head>
 <body>
 <div class="container mt-4">
@@ -140,45 +142,31 @@
         </div>
     </div>
 </div>
-<!-- Modal -->
-<div id="modal-asignar" class="modal" style="display: none;">
+
+<!-- Modal de Asignación -->
+<div id="modal-asignar">
     <div class="modal-content">
-        <h3>Asignar Técnico</h3>
-        <form id="form-asignar">
-            <input type="hidden" id="incidencia-id" name="incidencia_id" />
-            <label for="tecnico-select">Seleccionar Técnico:</label>
-            <select id="tecnico-select" name="tecnico_id">
-                <option value="">Seleccione un técnico</option>
-            </select>
-            <button type="submit" class="btn-confirmar">Confirmar</button>
-            <button type="button" class="btn-cancelar">Cancelar</button>
-        </form>
+        <div class="modal-header">
+            <h3>Asignar Técnico</h3>
+        </div>
+        <div class="modal-body">
+            <form id="form-asignar">
+                <input type="hidden" id="incidencia-id" name="incidencia_id" />
+                <div class="form-group">
+                    <label for="tecnico-select">Seleccionar Técnico:</label>
+                    <select id="tecnico-select" name="tecnico_id" class="form-select">
+                        <option value="">Seleccione un técnico</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Asignar</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<!-- Estilo básico del modal -->
-<style>
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .modal-content {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 300px;
-    }
-    .modal-content button {
-        margin-top: 10px;
-    }
-</style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

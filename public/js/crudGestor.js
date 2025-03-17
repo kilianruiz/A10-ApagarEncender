@@ -82,16 +82,27 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("btn-abrir-modal")) {
             let incidenciaId = event.target.getAttribute("data-id");
-            incidenciaIdInput.value = incidenciaId; // Guardar el ID de la incidencia
-            cargarTecnicos(); // Cargar técnicos en el select
-            modal.style.display = "flex"; // Mostrar el modal
+            incidenciaIdInput.value = incidenciaId;
+            cargarTecnicos();
+            modal.style.display = "flex";
+            modal.classList.add("show");
+            document.body.style.overflow = 'hidden';
         }
     });
 
     // Cerrar el modal
     document.querySelector(".btn-cancelar").addEventListener("click", function () {
-        modal.style.display = "none";
+        cerrarModal();
     });
+
+    // Función para cerrar el modal
+    function cerrarModal() {
+        modal.classList.remove("show");
+        setTimeout(() => {
+            modal.style.display = "none";
+            document.body.style.overflow = 'auto';
+        }, 200);
+    }
 
     // Cargar técnicos en el select
     function cargarTecnicos() {
@@ -106,7 +117,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     tecnicoSelect.appendChild(option);
                 });
             })
-            .catch(error => console.error("Error al cargar técnicos:", error));
+            .catch(error => {
+                console.error("Error al cargar técnicos:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudieron cargar los técnicos',
+                    confirmButtonColor: '#3085d6'
+                });
+            });
     }
 
     // Manejar el envío del formulario
@@ -117,7 +136,12 @@ document.addEventListener("DOMContentLoaded", function () {
         let tecnicoId = tecnicoSelect.value;
 
         if (!tecnicoId) {
-            alert("Seleccione un técnico antes de asignar.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Por favor, seleccione un técnico antes de asignar',
+                confirmButtonColor: '#3085d6'
+            });
             return;
         }
 
@@ -135,15 +159,34 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert("Error: " + data.error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error,
+                    confirmButtonColor: '#3085d6'
+                });
             } else {
-                alert("Incidencia asignada correctamente");
-                modal.style.display = "none"; // Cerrar el modal
-                cargarIncidencias("sin_asignar");
-                cargarIncidencias("asignada");
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Incidencia asignada correctamente',
+                    confirmButtonColor: '#3085d6'
+                }).then((result) => {
+                    cerrarModal();
+                    cargarIncidencias("sin_asignar");
+                    cargarIncidencias("asignada");
+                });
             }
         })
-        .catch(error => console.error("Error al asignar incidencia:", error));
+        .catch(error => {
+            console.error("Error al asignar incidencia:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al asignar la incidencia',
+                confirmButtonColor: '#3085d6'
+            });
+        });
     });
 
     // Cargar las incidencias iniciales
