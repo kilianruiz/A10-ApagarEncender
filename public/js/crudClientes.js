@@ -333,3 +333,77 @@ document.addEventListener('DOMContentLoaded', function() {
     // Agregar event listener al botón de toggle de resueltas
     document.getElementById('toggleResueltas').addEventListener('click', toggleResueltas);
 });
+
+// validaciones js 
+document.getElementById('createIncidenciaForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let errors = {};
+
+    const titulo = document.getElementById('createTitulo').value.trim();
+    const descripcion = document.getElementById('createDescripcion').value.trim();
+    const categoria = document.getElementById('createCategoria').value;
+    const subcategoria = document.getElementById('createSubcategoria').value;
+    const prioridad = document.getElementById('createPrioridad').value;
+    const imagen = document.getElementById('createImagen').files.length;
+
+    // Validar cada campo y almacenar los errores
+    if (!titulo) errors.titulo = 'El título es obligatorio.';
+    if (!descripcion) errors.descripcion = 'La descripción es obligatoria.';
+    if (!categoria) errors.categoria = 'Debe seleccionar una categoría.';
+    if (!subcategoria) errors.subcategoria = 'Debe seleccionar una subcategoría.';
+    if (!prioridad) errors.prioridad = 'Debe seleccionar una prioridad.';
+    if (imagen === 0) errors.imagen = 'Debe adjuntar una imagen.';
+
+    // Mostrar los errores debajo de cada campo
+    document.getElementById('createTituloError').textContent = errors.titulo || '';
+    document.getElementById('createTituloError').style.display = errors.titulo ? 'block' : 'none';
+
+    document.getElementById('createDescripcionError').textContent = errors.descripcion || '';
+    document.getElementById('createDescripcionError').style.display = errors.descripcion ? 'block' : 'none';
+
+    document.getElementById('createCategoriaError').textContent = errors.categoria || '';
+    document.getElementById('createCategoriaError').style.display = errors.categoria ? 'block' : 'none';
+
+    document.getElementById('createSubcategoriaError').textContent = errors.subcategoria || '';
+    document.getElementById('createSubcategoriaError').style.display = errors.subcategoria ? 'block' : 'none';
+
+    document.getElementById('createPrioridadError').textContent = errors.prioridad || '';
+    document.getElementById('createPrioridadError').style.display = errors.prioridad ? 'block' : 'none';
+
+    document.getElementById('createImagenError').textContent = errors.imagen || '';
+    document.getElementById('createImagenError').style.display = errors.imagen ? 'block' : 'none';
+
+    // Si no hay errores, enviar el formulario
+    if (Object.keys(errors).length === 0) {
+        this.submit();
+    }
+});
+
+document.getElementById('editIncidenciaForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let errors = {};
+
+    const titulo = document.getElementById('editTitulo').value.trim();
+    const descripcion = document.getElementById('editDescripcion').value.trim();
+    const prioridad = document.getElementById('editPrioridad').value;
+
+    // Validar cada campo y almacenar los errores
+    if (!titulo) errors.titulo = 'El título es obligatorio.';
+    if (!descripcion) errors.descripcion = 'La descripción es obligatoria.';
+    if (!prioridad) errors.prioridad = 'Debe seleccionar una prioridad.';
+
+    // Mostrar los errores debajo de cada campo
+    document.getElementById('editTituloError').textContent = errors.titulo || '';
+    document.getElementById('editTituloError').style.display = errors.titulo ? 'block' : 'none';
+
+    document.getElementById('editDescripcionError').textContent = errors.descripcion || '';
+    document.getElementById('editDescripcionError').style.display = errors.descripcion ? 'block' : 'none';
+
+    document.getElementById('editPrioridadError').textContent = errors.prioridad || '';
+    document.getElementById('editPrioridadError').style.display = errors.prioridad ? 'block' : 'none';
+
+    // Si no hay errores, enviar el formulario
+    if (Object.keys(errors).length === 0) {
+        this.submit();
+    }
+});
