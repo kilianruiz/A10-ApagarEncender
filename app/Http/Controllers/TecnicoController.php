@@ -17,9 +17,11 @@ class TecnicoController extends Controller
 
     public function getComentarios(Request $request) {
         $query = IncidenciaUsuario::where('user_id', Auth::id())
-            ->with(['incidencia' => function($query) {
-                $query->where('estado', '!=', 'resuelta');
-            }]);
+        ->whereHas('incidencia', function($q) {
+            $q->where('estado', '!=', 'resuelta');
+        })
+        ->with('incidencia');
+    
 
         // filtro de estado
         if ($request->has('estado') && $request->estado !== '') {
