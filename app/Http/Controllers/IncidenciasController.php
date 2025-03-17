@@ -5,23 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Incidencia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class IncidenciasController extends Controller
 {
     // Método para mostrar las incidencias en el gestor
     public function index($nombre_sede)
     {
-        // Obtener el usuario autenticado
         $user = Auth::user();
-
-        // Buscar la sede por nombre
         $sede = $user->sede()->where('localización', $nombre_sede)->first();
 
         if (!$sede) {
             return abort(404, 'Sede no encontrada');
         }
 
-        // Obtener las incidencias filtradas por la sede del usuario
         $sin_asignar = Incidencia::where('estado', 'sin asignar')
                                 ->where('sede_id', $sede->id)
                                 ->get();
@@ -29,7 +27,7 @@ class IncidenciasController extends Controller
         $asignadas = Incidencia::whereIn('estado', ['asignada', 'en proceso'])
                                 ->where('sede_id', $sede->id)
                                 ->get();
-        
+
         $resueltas = Incidencia::where('estado', 'resuelta')
                                 ->where('sede_id', $sede->id)
                                 ->get();
@@ -38,79 +36,87 @@ class IncidenciasController extends Controller
                                 ->where('sede_id', $sede->id)
                                 ->get();
 
-        // Retornar la vista con las incidencias filtradas
-        return view('crudGestor.index', compact('sin_asignar', 'asignadas', 'resueltas', 'cerradas', 'sede','user'));
+        return view('crudGestor.index', compact('sin_asignar', 'asignadas', 'resueltas', 'cerradas', 'sede', 'user'));
     }
 
     // Obtener incidencias por estado a través de AJAX
     public function getByStatus(Request $request)
     {
-        $estado = str_replace("_", " ", $request->input('estado')); // Reemplazar "_" por espacios
-    
+        $estado = str_replace("_", " ", $request->input('estado'));
+
         if (!$estado) {
             return response()->json(['error' => 'Estado no proporcionado'], 400);
         }
-    
-        $user = Auth::user(); // Obtener el usuario autenticado
+
+        $user = Auth::user();
         $sede_id = $user->sede_id;
-    
-        // Buscar las incidencias, uniendo la relación de usuario, categoría y subcategoría
+
         if ($sede_id === null) {
-            // Admin puede ver todas las incidencias de todas las sedes
             $incidencias = Incidencia::with(['user', 'categoria', 'subcategoria'])
                                     ->where('estado', $estado)
                                     ->get();
         } else {
-            // Filtrar las incidencias por sede_id del usuario autenticado
             $incidencias = Incidencia::with(['user', 'categoria', 'subcategoria'])
                                     ->where('estado', $estado)
                                     ->where('sede_id', $sede_id)
                                     ->get();
         }
-    
+
         return response()->json($incidencias);
     }
 
+    // Asignar incidencia
     public function asignarIncidencia(Request $request)
     {
+        // Validación de datos
         $request->validate([
             'incidencia_id' => 'required|exists:incidencias,id',
-            'tecnico_id' => 'required|exists:users,id'
+            'tecnico_id' => 'required|exists:users,id',
         ]);
 
-        $user = Auth::user();
+        try {
+            // Obtener la incidencia
+            $incidencia = Incidencia::findOrFail($request->incidencia_id);
 
-        // Si el usuario es un administrador, puede asignar a cualquier técnico
-        if ($user->role === 'admin') {
-            $tecnico = User::find($request->tecnico_id);
-        } else {
-            // Verificar si el técnico pertenece al jefe autenticado
-            $tecnico = User::where('id', $request->tecnico_id)
-                           ->where('jefe_id', $user->id)
-                           ->first();
+            // 1. Actualizar el estado de la incidencia y asignar el técnico
+            $incidencia->update([
+                'estado' => 'asignada'
+            ]);
+
+            // 2. Insertar un nuevo registro en la tabla incidencia_usuario
+            DB::table('incidencia_usuario')->insert([
+                'titulo' => $incidencia->titulo, // Copiar el título de la incidencia
+                'comentario' => $incidencia->comentario ?? "La incidencia ha sido asignada al técnico.", // Comentario predeterminado
+                'imagen' => $incidencia->imagen, // Copiar la imagen de la incidencia (si existe)
+                'user_id' => $request->tecnico_id, // ID del técnico asignado
+                'incidencia_id' => $incidencia->id, // ID de la incidencia
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Respuesta exitosa
+            return response()->json(['message' => 'Incidencia asignada correctamente']);
+        } catch (\Exception $e) {
+            // Manejo de errores
+            Log::error('Error al asignar incidencia:', [
+                'error' => $e->getMessage(),
+                'incidencia_id' => $request->incidencia_id,
+                'tecnico_id' => $request->tecnico_id,
+            ]);
+
+            return response()->json(['error' => 'Ocurrió un error al asignar la incidencia'], 500);
         }
-
-        if (!$tecnico) {
-            return response()->json(['error' => 'No puedes asignar a este técnico'], 403);
-        }
-
-        // Asignar la incidencia
-        $incidencia = Incidencia::findOrFail($request->incidencia_id);
-        $incidencia->user_id = $tecnico->id;
-        $incidencia->estado = 'asignada';
-        $incidencia->save();
-
-        return response()->json(['message' => 'Incidencia asignada correctamente']);
     }
 
+    // Obtener técnicos disponibles
     public function obtenerTecnicos()
     {
-        $user = Auth::user(); // Obtener el usuario autenticado
+        $user = Auth::user();
 
         if ($user->role === 'admin') {
-            $tecnicos = \App\Models\User::where('role', 'tecnico')->get(); // Obtener todos los técnicos
+            $tecnicos = \App\Models\User::where('role', 'tecnico')->get();
         } else {
-            $tecnicos = \App\Models\User::where('jefe_id', $user->id)->get(); // Solo los técnicos del jefe
+            $tecnicos = \App\Models\User::where('jefe_id', $user->id)->get();
         }
 
         if ($tecnicos->isEmpty()) {
@@ -119,5 +125,4 @@ class IncidenciasController extends Controller
 
         return response()->json($tecnicos);
     }
-
 }
