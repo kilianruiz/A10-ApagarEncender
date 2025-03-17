@@ -229,21 +229,11 @@ $(document).ready(function() {
                             showConfirmButton: false,
                             timer: 1500
                         });
-
-                        // Recargar la lista de usuarios después de eliminar
                         ListarProductos();
-                    } else {
-                        throw new Error(responseText.error || 'Error desconocido');
                     }
                 })
                 .catch(error => {
-                    console.error('Error al eliminar usuario:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se pudo eliminar el usuario. Verifique la consola para más detalles.',
-                        confirmButtonText: 'Aceptar'
-                    });
+                    console.error('Error al eliminar el usuario:', error);
                 });
             }
         });

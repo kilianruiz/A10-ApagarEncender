@@ -155,9 +155,7 @@ class AdminUserController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'error' => 'Error al eliminar usuario: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['error' => 'Hubo un error al eliminar el usuario o las incidencias: ' . $e->getMessage()], 500);
         }
     }
     
