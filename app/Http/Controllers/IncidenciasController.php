@@ -48,21 +48,36 @@ class IncidenciasController extends Controller
             return response()->json(['error' => 'Estado no proporcionado'], 400);
         }
 
-        $user = Auth::user();
-        $sede_id = $user->sede_id;
+        try {
+            $user = Auth::user();
+            $sede_id = $user->sede_id;
 
-        if ($sede_id === null) {
-            $incidencias = Incidencia::with(['user', 'categoria', 'subcategoria'])
-                                    ->where('estado', $estado)
-                                    ->get();
-        } else {
-            $incidencias = Incidencia::with(['user', 'categoria', 'subcategoria'])
-                                    ->where('estado', $estado)
-                                    ->where('sede_id', $sede_id)
-                                    ->get();
+            $query = Incidencia::with(['user', 'categoria', 'subcategoria'])
+                            ->where('estado', $estado);
+
+            if ($sede_id !== null) {
+                $query->where('sede_id', $sede_id);
+            }
+
+            $incidencias = $query->get();
+
+            // Log para depuración
+            \Log::info('Consulta de incidencias:', [
+                'estado' => $estado,
+                'sede_id' => $sede_id,
+                'count' => $incidencias->count(),
+                'sql' => $query->toSql(),
+                'bindings' => $query->getBindings()
+            ]);
+
+            return response()->json($incidencias);
+        } catch (\Exception $e) {
+            \Log::error('Error en getByStatus:', [
+                'error' => $e->getMessage(),
+                'estado' => $estado
+            ]);
+            return response()->json(['error' => 'Error al obtener incidencias: ' . $e->getMessage()], 500);
         }
-
-        return response()->json($incidencias);
     }
 
     // Asignar incidencia
@@ -75,29 +90,32 @@ class IncidenciasController extends Controller
         ]);
 
         try {
-            // Obtener la incidencia
+            DB::beginTransaction();
+
+            // 1. Obtener la incidencia
             $incidencia = Incidencia::findOrFail($request->incidencia_id);
 
-            // 1. Actualizar el estado de la incidencia y asignar el técnico
+            // 2. Actualizar el estado de la incidencia
             $incidencia->update([
                 'estado' => 'asignada'
             ]);
 
-            // 2. Insertar un nuevo registro en la tabla incidencia_usuario
+            // 3. Insertar en la tabla incidencia_usuario
             DB::table('incidencia_usuario')->insert([
-                'titulo' => $incidencia->titulo, // Copiar el título de la incidencia
-                'comentario' => $incidencia->comentario ?? "La incidencia ha sido asignada al técnico.", // Comentario predeterminado
-                'imagen' => $incidencia->imagen, // Copiar la imagen de la incidencia (si existe)
-                'user_id' => $request->tecnico_id, // ID del técnico asignado
-                'incidencia_id' => $incidencia->id, // ID de la incidencia
+                'titulo' => $incidencia->titulo,
+                'comentario' => 'Incidencia asignada al técnico',
+                'imagen' => $incidencia->imagen ?? '',
+                'user_id' => $request->tecnico_id,
+                'incidencia_id' => $request->incidencia_id,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            // Respuesta exitosa
+            DB::commit();
             return response()->json(['message' => 'Incidencia asignada correctamente']);
+
         } catch (\Exception $e) {
-            // Manejo de errores
+            DB::rollBack();
             Log::error('Error al asignar incidencia:', [
                 'error' => $e->getMessage(),
                 'incidencia_id' => $request->incidencia_id,

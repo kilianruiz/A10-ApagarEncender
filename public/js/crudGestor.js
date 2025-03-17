@@ -2,38 +2,74 @@ document.addEventListener("DOMContentLoaded", function () {
     // Cargar incidencias por estado
     function cargarIncidencias(estado) {
         let estadoNormalizado = estado.replace(/\s/g, "_");
-        fetch(`/api/incidencias?estado=${estadoNormalizado}`)
-            .then(response => response.json())
-            .then(data => {
-                let tabla = document.getElementById(`tabla-${estadoNormalizado}`);
-                if (!tabla) return;
+        console.log('Cargando incidencias para estado:', estadoNormalizado);
 
-                tabla.innerHTML = data.length === 0
-                    ? "<tr><td colspan='12'>No hay incidencias en este estado.</td></tr>"
-                    : "";
+        fetch(`${window.location.origin}/api/incidencias?estado=${estadoNormalizado}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            console.log('Status de la respuesta:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Datos recibidos:', data);
+            
+            let tabla = document.getElementById(`tabla-${estadoNormalizado}`);
+            if (!tabla) {
+                console.error('No se encontró la tabla para el estado:', estadoNormalizado);
+                return;
+            }
 
-                data.forEach(incidencia => {
-                    let fila = document.createElement("tr");
-                    fila.innerHTML = `
-                        <td>${incidencia.id}</td>
-                        <td>${incidencia.titulo}</td>
-                        <td>${incidencia.descripcion}</td>
-                        <td>${incidencia.comentario}</td>
-                        <td>${incidencia.estado}</td>
-                        <td>${incidencia.prioridad}</td>
-                        <td>${incidencia.user ? incidencia.user.name : 'No asignado'}</td>
-                        <td>${incidencia.categoria ? incidencia.categoria.nombre : 'Sin Categoría'}</td>
-                        <td>${incidencia.subcategoria ? incidencia.subcategoria.nombre : 'Sin Subcategoría'}</td>
-                        <td>${incidencia.feedback}</td>
-                        <td>${new Date(incidencia.created_at).toLocaleString('es')}</td>
-                        <td>
-                            <button class="btn-abrir-modal" data-id="${incidencia.id}">Asignar</button>
-                        </td>
-                    `;
-                    tabla.appendChild(fila);
-                });
-            })
-            .catch(error => console.error("Error al cargar incidencias:", error));
+            if (data.error) {
+                console.error('Error del servidor:', data.error);
+                tabla.innerHTML = `<tr><td colspan='12'>Error: ${data.error}</td></tr>`;
+                return;
+            }
+
+            tabla.innerHTML = data.length === 0
+                ? "<tr><td colspan='12'>No hay incidencias en este estado.</td></tr>"
+                : "";
+
+            data.forEach(incidencia => {
+                console.log('Procesando incidencia:', incidencia);
+                let fila = document.createElement("tr");
+                // Obtener el técnico asignado (el primero en la lista de usuarios)
+                const tecnicoAsignado = incidencia.usuarios && incidencia.usuarios.length > 0 
+                    ? incidencia.usuarios[0] 
+                    : null;
+
+                fila.innerHTML = `
+                    <td>${incidencia.id}</td>
+                    <td>${incidencia.titulo}</td>
+                    <td>${incidencia.descripcion || ''}</td>
+                    <td>${incidencia.comentario || ''}</td>
+                    <td>${incidencia.estado}</td>
+                    <td>${incidencia.prioridad || ''}</td>
+                    <td>${incidencia.user ? incidencia.user.name : 'No asignado'}</td>
+                    <td>${incidencia.categoria ? incidencia.categoria.nombre : 'Sin Categoría'}</td>
+                    <td>${incidencia.subcategoria ? incidencia.subcategoria.nombre : 'Sin Subcategoría'}</td>
+                    <td>${incidencia.feedback || ''}</td>
+                    <td>${new Date(incidencia.created_at).toLocaleString('es')}</td>
+                    <td>
+                        ${incidencia.estado === 'sin asignar' 
+                            ? `<button class="btn-abrir-modal btn btn-primary" data-id="${incidencia.id}">Asignar</button>`
+                            : `<span class="text-muted">Técnico: ${tecnicoAsignado ? tecnicoAsignado.name : 'Sin técnico'}</span>`
+                        }
+                    </td>
+                `;
+                tabla.appendChild(fila);
+            });
+        })
+        .catch(error => {
+            console.error("Error al cargar incidencias:", error);
+            let tabla = document.getElementById(`tabla-${estadoNormalizado}`);
+            if (tabla) {
+                tabla.innerHTML = `<tr><td colspan='12'>Error al cargar las incidencias: ${error.message}</td></tr>`;
+            }
+        });
     }
 
     // Abrir el modal

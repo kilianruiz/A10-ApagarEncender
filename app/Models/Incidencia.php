@@ -32,6 +32,6 @@ class Incidencia extends Model
 
     public function usuarios()
     {
-        return $this->belongsToMany(User::class, 'incidencia_usuario');
+        return $this->belongsToMany(User::class, 'incidencia_usuario', 'incidencia_id', 'user_id');
     }
 }
