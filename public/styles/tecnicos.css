@@ -133,6 +133,44 @@
     border-left: 4px solid #0EA5E9;
 }
 
+.btn-group .btn {
+    background-color: #F0F9FF;
+    color: #0C4A6E;
+}
+
+.btn-group .btn  .btn {
+    background-color: #F0F9FF;
+    color: #0C4A6E;
+    border-color: #042437;
+}
+
+#btn-crear {
+    background-color: #F0F9FF !important;
+    color: #0C4A6E !important;
+    border-color: #042437 !important;
+}
+#toggleResueltas {
+    background-color: white;
+    border: 2px solid #28a745; 
+    color: #28a745; 
+    transition: background-color 0.3s, color 0.3s; 
+}
+
+#toggleResueltas:hover {
+    background-color: #28a745; 
+    border-color: #28a745; 
+    color: white;
+}
+
+#toggleResueltas .btn-ojo {
+    transition: color 0.3s;
+}
+
+#toggleResueltas:hover .btn-ojo {
+    color: white; 
+}
+
+
 /* Mantener el responsive existente pero con mejoras */
 @media screen and (max-width: 768px) {
     .container {

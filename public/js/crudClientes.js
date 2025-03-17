@@ -63,6 +63,7 @@ function cargarIncidencias(estado = null, orden = 'desc') {
                     </button>` 
                     : '';
 
+                // Modificar los botones dentro de la fila de la tabla
                 row.innerHTML = `
                     <td>${incidencia.titulo}</td>
                     <td>${incidencia.descripcion.length > 50 ? incidencia.descripcion.substring(0, 50) + '...' : incidencia.descripcion}</td>
@@ -76,15 +77,18 @@ function cargarIncidencias(estado = null, orden = 'desc') {
                     <td class="${prioridadColor}">${incidencia.prioridad.charAt(0).toUpperCase() + incidencia.prioridad.slice(1)}</td>
                     <td>${new Date(incidencia.created_at).toLocaleDateString()} ${new Date(incidencia.created_at).toLocaleTimeString()}</td>
                     <td>
-                        <button class="btn btn-info me-2" data-id="${incidencia.id}" onclick="verIncidencia(${incidencia.id})">
-                            <i class="fas fa-search"></i>
-                        </button>
-                        <button class="btn btn-warning" data-id="${incidencia.id}" onclick="editarIncidencia(${incidencia.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        ${botonCerrar}
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-info" data-id="${incidencia.id}" onclick="verIncidencia(${incidencia.id})">
+                                <i class="fas fa-search"></i> 
+                            </button>
+                            <button class="btn btn-warning" data-id="${incidencia.id}" onclick="editarIncidencia(${incidencia.id})">
+                                <i class="fas fa-edit"></i> 
+                            </button>
+                            ${botonCerrar}
+                        </div>
                     </td>
-                `;  
+                `;
+ 
                 tableBody.appendChild(row);
             });
         })

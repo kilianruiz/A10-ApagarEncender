@@ -3,60 +3,22 @@
 @section('title', 'Mis Incidencias')
 
 @section('content')
-<!-- Asegúrate de incluir Bootstrap en el archivo layout principal -->
+<!-- Asegúrate de incluir los estilos utilizados en la otra página -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ asset('styles/tecnicos.css') }}">
 
-<style>
-    #incidenciasTable {
-        min-height: 400px; /* Altura mínima para mantener consistencia */
-    }
-    
-    #incidenciasTable tbody {
-        display: table-row-group;
-        min-height: 300px; /* Altura mínima para el cuerpo de la tabla */
-    }
-    
-    #incidenciasTable tbody:empty::after {
-        content: '';
-        display: table-row;
-        height: 300px; /* Altura cuando no hay datos */
-    }
-    
-    #incidenciasTable td {
-        vertical-align: middle; /* Alineación vertical centrada */
-        padding: 1rem; /* Espaciado consistente */
-    }
-    
-    #incidenciasTable .img-thumbnail {
-        max-width: 100px;
-        max-height: 100px;
-        object-fit: contain; /* Mantiene la proporción de la imagen */
-    }
-</style>
 
-<!-- Navbar de Bootstrap -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <!-- Coloca el nombre de usuario a la izquierda -->
-    <span class="navbar-text">
-      Bienvenido, {{ Auth::user()->name }}
-    </span>
-
-    <!-- El ícono de logout a la derecha -->
-    <form action="{{ route('logout') }}" method="POST" class="d-inline">
-      @csrf
-      <button type="submit" class="btn btn-outline-danger">
-        <i class="bi bi-box-arrow-right"></i>
-      </button>
-    </form>
-  </div>
-</nav>
-
-<!-- Resto del contenido de "Mis Incidencias" -->
-<div class="container">
-    <h1>Mis Incidencias</h1>
-
+  <div class="container mt-4">
+    <div class="user-header mb-4 d-flex justify-content-between align-items-center">
+        <div class="user-info">
+            <h4 class="mb-0">Bienvenido, {{ Auth::user()->name }}</h4>
+        </div>
+        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-outline-danger"><i class="bi bi-box-arrow-right"></i></button>    
+        </form>
+      </div>
     @if(session('error'))
         <div class="alert alert-danger">
             {{ session('error') }}
@@ -75,7 +37,7 @@
             </button>
         </div>
         <button id="toggleResueltas" class="btn btn-success" title="Mostrar/Ocultar incidencias resueltas">
-            <i class="fas fa-eye"></i>
+            <i class="fas fa-eye btn-ojo" ></i>
         </button>
     </div>
 
@@ -99,26 +61,29 @@
             <button class="nav-link" id="cerradas-tab" data-bs-toggle="tab" data-bs-target="#cerradas" type="button" role="tab" aria-controls="cerradas" aria-selected="false" data-status="cerradas">Cerradas</button>
         </li>
     </ul>
-    <table class="table table-striped" id="incidenciasTable">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Descripción</th>
-                <th>Imagen</th>
-                <th>Estado</th>
-                <th>Prioridad</th>
-                <th>Fecha de creación</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Las filas de la tabla se cargarán aquí con AJAX -->
-        </tbody>
-    </table>
-</div>
+    
+    <div id="tabla-comentarios">
+        <table class="table" id="incidenciasTable">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Imagen</th>
+                    <th>Estado</th>
+                    <th>Prioridad</th>
+                    <th>Fecha de creación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="comentarios-body">
+                <!-- Las filas de la tabla se cargarán aquí con AJAX -->
+            </tbody>
+        </table>
+    </div>
+  </div>
 
-<!-- Modal para ver la incidencia en grande -->
-<div class="modal fade" id="viewIncidenciaModal" tabindex="-1" role="dialog" aria-labelledby="viewIncidenciaModalLabel" aria-hidden="true">
+  <!-- Modal para ver la incidencia en grande -->
+  <div class="modal fade" id="viewIncidenciaModal" tabindex="-1" role="dialog" aria-labelledby="viewIncidenciaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -132,10 +97,10 @@
             </div>
         </div>
     </div>
-</div>
+  </div>
 
-<!-- Modal para editar la incidencia -->
-<div class="modal fade" id="editIncidenciaModal" tabindex="-1" role="dialog" aria-labelledby="editIncidenciaModalLabel" aria-hidden="true">
+  <!-- Modal para editar la incidencia -->
+  <div class="modal fade" id="editIncidenciaModal" tabindex="-1" role="dialog" aria-labelledby="editIncidenciaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -164,20 +129,18 @@
             </div>
         </div>
     </div>
-</div>
+  </div>
 
-<!-- Modal para crear la incidencia -->
-<div class="modal fade" id="createIncidenciaModal" tabindex="-1" aria-labelledby="createIncidenciaModalLabel" aria-hidden="true">
+  <!-- Modal para crear la incidencia -->
+  <div class="modal fade" id="createIncidenciaModal" tabindex="-1" aria-labelledby="createIncidenciaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="createIncidenciaModalLabel">Crear Nueva Incidencia</h5>
             </div>
             <div class="modal-body">
-                <!-- Formulario para crear una incidencia -->
                 <form id="createIncidenciaForm" method="POST" action="{{ route('incidencias.store') }}" enctype="multipart/form-data">
                     @csrf
-                    <!-- Campo oculto para la sede -->
                     <input type="hidden" name="sede_id" value="{{ Auth::user()->sede_id }}">
                     
                     <div class="mb-3">
@@ -220,7 +183,7 @@
             </div>
         </div>
     </div>
-</div>
+  </div>
 
 @endsection
 
@@ -233,22 +196,13 @@
             const subcategoriaSelect = document.getElementById('createSubcategoria');
             
             if (categoriaId) {
-                // Habilitar el select de subcategorías
                 subcategoriaSelect.disabled = false;
-                
-                // Hacer la petición para obtener las subcategorías usando la ruta de Laravel
+
                 fetch("{{ url('/get-subcategorias') }}/" + categoriaId)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Error en la red');
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
-                        // Limpiar las opciones actuales
                         subcategoriaSelect.innerHTML = '<option value="">Seleccione una subcategoría</option>';
                         
-                        // Agregar las nuevas opciones
                         data.forEach(subcategoria => {
                             const option = document.createElement('option');
                             option.value = subcategoria.id;
@@ -256,15 +210,12 @@
                             subcategoriaSelect.appendChild(option);
                         });
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        subcategoriaSelect.innerHTML = '<option value="">Error al cargar subcategorías</option>';
-                    });
+                    .catch(error => console.error('Error:', error));
             } else {
-                // Si no hay categoría seleccionada, deshabilitar y limpiar subcategorías
                 subcategoriaSelect.disabled = true;
                 subcategoriaSelect.innerHTML = '<option value="">Primero seleccione una categoría</option>';
             }
         });
     </script>
 @endsection
+
