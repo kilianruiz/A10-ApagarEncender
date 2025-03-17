@@ -1,7 +1,7 @@
 // Variable global para controlar la visibilidad de incidencias resueltas
 let mostrarResueltas = true;
 
-// Función para cargar la tabla de incidencias
+
 function cargarIncidencias(estado = null, orden = 'desc') {
     let url = '/incidencias';
     const params = new URLSearchParams();
@@ -56,6 +56,13 @@ function cargarIncidencias(estado = null, orden = 'desc') {
                     prioridadColor = 'text-success'; // Verde
                 }
 
+                // Botón de cerrar solo si el estado es "resuelta"
+                const botonCerrar = incidencia.estado === 'resuelta' ? 
+                    `<button class="btn btn-danger" onclick="cerrarIncidencia(${incidencia.id})">
+                        <i class="fas fa-times"></i> 
+                    </button>` 
+                    : '';
+
                 row.innerHTML = `
                     <td>${incidencia.titulo}</td>
                     <td>${incidencia.descripcion.length > 50 ? incidencia.descripcion.substring(0, 50) + '...' : incidencia.descripcion}</td>
@@ -75,6 +82,7 @@ function cargarIncidencias(estado = null, orden = 'desc') {
                         <button class="btn btn-warning" data-id="${incidencia.id}" onclick="editarIncidencia(${incidencia.id})">
                             <i class="fas fa-edit"></i>
                         </button>
+                        ${botonCerrar}
                     </td>
                 `;  
                 tableBody.appendChild(row);
@@ -126,6 +134,57 @@ function verIncidencia(id) {
                 icon: 'error'
             });
         });
+}
+
+function cerrarIncidencia(id) {
+    // Obtener el token CSRF del meta tag
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    fetch(`/incidencia/${id}/cerrar`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || 'Error al cerrar la incidencia');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Incidencia cerrada correctamente',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            
+            // Recargar la tabla
+            const activeTab = document.querySelector('#incidenciasTabs .nav-link.active');
+            const status = activeTab ? activeTab.getAttribute('data-status') : null;
+            cargarIncidencias(status === 'todas' ? null : status);
+        } else {
+            throw new Error(data.message || 'Error al cerrar la incidencia');
+        }
+    })
+    .catch(error => {
+        console.error('Error completo:', error);
+        
+        // Mostrar mensaje de error con SweetAlert2
+        Swal.fire({
+            title: 'Error',
+            text: error.message || 'Error al cerrar la incidencia',
+            icon: 'error'
+        });
+    });
 }
 
 // Función para editar la incidencia

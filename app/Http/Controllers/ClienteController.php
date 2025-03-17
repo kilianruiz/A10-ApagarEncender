@@ -113,6 +113,27 @@ class ClienteController extends Controller
         // Redirigir con mensaje de éxito
         return redirect()->back()->with('success', 'Incidencia creada exitosamente.');
     }
+    public function cerrar($id)
+    {
+        $incidencia = Incidencia::findOrFail($id);
+
+        // Verificar que la incidencia esté en estado "resuelta"
+        if ($incidencia->estado !== 'resuelta') {
+            return response()->json([
+                'success' => false,
+                'message' => 'La incidencia no está resuelta y no puede ser cerrada.'
+            ], 400);
+        }
+
+        // Actualizar el estado a "cerrada"
+        $incidencia->estado = 'cerrada';
+        $incidencia->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Incidencia cerrada correctamente.'
+        ]);
+    }
 
     public function update(Request $request, $id)
     {
