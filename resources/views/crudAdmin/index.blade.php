@@ -2,13 +2,24 @@
 
 
 @section('content')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
-<div class="contenedor">
-    <h1>Gestión de Usuarios</h1>
-    <div class="mb-3">
-        <input type="text" id="filter" placeholder="Buscar usuarios por nombre..." class="mb-2">
-        <input type="text" id="filterEmail" placeholder="Buscar usuarios por email..." class="form-control mb-2">
-        <select id="filterRole" class="form-control mb-2">
+
+<div class="container">
+        <div class="user-header mb-4 d-flex justify-content-between align-items-center">
+            <div class="user-info">
+                <h4 class="mb-0">Bienvenido, {{ Auth::user()->name }}</h4>
+            </div>
+            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-outline-danger"><i class="bi bi-box-arrow-right"></i></button>    
+            </form>
+       </div>    
+      <div class="mb-3 d-flex flex-row gap-3 align-items-center" style="width: 80%;">
+        <input type="text" id="filter" placeholder="Buscar usuarios por nombre..." class="form-control">
+        <input type="text" id="filterEmail" placeholder="Buscar usuarios por email..." class="form-control">
+        <select id="filterRole" class="form-select">
             <option value="">Filtrar por rol</option>
             @foreach($roles as $role)
                 @if($role->id !== 1)
@@ -16,15 +27,15 @@
                 @endif
             @endforeach
         </select>
-        <select id="filterSede" class="form-control mb-2">
+        <select id="filterSede" class="form-select">
             <option value="">Filtrar por sede</option>
             @foreach($sedes as $sede)
                 <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
             @endforeach
         </select>
-        <button id="clearFilters" class="boton-secundario mb-3">Limpiar Filtros</button>
+        <button id="clearFilters" class="btn"><i class="fas fa-broom"></i></button>
     </div>
-    <button id="openUserModal" class="boton-principal mb-3 ">Crear Usuario</button>
+    <button id="openUserModal" name="btn-crear" class="btn btn-crear mb-3">Crear Usuario</button>
     <table class="table text-center">
         <thead>
             <tr>
@@ -41,7 +52,6 @@
     </table>
     <!-- Contenedor para los controles de paginación -->
     <div id="paginationControls" class="mt-3"></div>
-</div>
 
 <!-- Modal para crear usuario -->
 <div id="createUserModal" class="modal" tabindex="-1" role="dialog">
@@ -85,7 +95,7 @@
                                 <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
                             @endforeach
                         </select>
-                    <button type="submit" class="boton-principal">Crear</button>
+                    <button type="submit" class="btn-crear btn mt-3">Crear</button>
                 </form>
             </div>
         </div>
@@ -138,7 +148,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="boton-principal">Guardar</button>
+                    <button type="submit" class="btn-crear btn mt-3">Guardar</button>
                 </form>
             </div>
         </div>
@@ -158,10 +168,11 @@
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="boton-secundario" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 @section('scripts')

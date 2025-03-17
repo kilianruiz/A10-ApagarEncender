@@ -23,18 +23,19 @@ $(document).ready(function() {
                     str += `<td>${user.role ? user.role.nombre : 'Sin rol'}</td>`;
                     str += `<td>${user.sede ? user.sede.nombre : 'Sin sede'}</td>`;
                     str += `<td class="d-flex flex-row justify-content-center" style="gap:10px;">`;
+                    str += `<div class="btn-group">`;
                     if (user.role_id !== 1) { // Suponiendo que el rol de administrador tiene el ID 1
-                        str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})">Editar</button>`;
+                        str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})"><i class="fas fa-edit"></i></button>`;
                     } else {
-                        str += `<button type='button' class='btn btn-success' disabled>Editar</button>`;
+                        str += `<button type='button' class='btn btn-success' disabled><i class="fas fa-edit"></i></button>`;
                     }
                     if (user.role_id !== 1) { // Suponiendo que el rol de administrador tiene el ID 1
-                        str += `<button type='button' class='btn btn-danger' onclick="Eliminar(${user.id})">Eliminar</button>`;
+                        str += `<button type='button' class='btn btn-danger' onclick="Eliminar(${user.id})"><i class="fas fa-trash"></i></button>`;
                     } else {
-                        str += `<button type='button' class='btn btn-danger' disabled>Eliminar</button>`;
+                        str += `<button type='button' class='btn btn-danger' disabled><i class="fas fa-trash"></i></button>`;
                     }
-                        str += `<button type='button' class='btn btn-primary' id='btn-incidencias-${user.id}' onclick="AsignarIncidencia(${user.id})">Incidencia</button>`;
-                    str += `</td></tr>`;
+                        str += `<button type='button' class='btn btn-primary' id='btn-incidencias-${user.id}' onclick="AsignarIncidencia(${user.id})"><i class="fas fa-eye"></i></button>`;
+                    str += `</div></td></tr>`;
                     tabla += str;
                 });
                 resultado.innerHTML = tabla;
@@ -46,7 +47,7 @@ $(document).ready(function() {
                 });
 
                 // Generar elementos de paginación
-                let pagination = '<nav aria-label="Page navigation example"><ul class="pagination">';
+                let pagination = '<nav aria-label="Page navigation example"><ul class="pagination justify-content-center">';
                 if (data.pagination.current_page > 1) {
                     pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page - 1})">Anterior</a></li>`;
                 }
