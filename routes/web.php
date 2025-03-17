@@ -35,27 +35,29 @@ Route::middleware(['auth'])->group(function () {
 
     // rutas incidencias
     Route::controller(IncidenciasController::class)->group(function () {
-        // Ruta incidencias
-        Route::get('/gestor', [IncidenciasController::class, 'index']);
+        // Ruta para el gestor, se pasa el nombre de la sede en la URL
+        Route::get('/gestor/{nombre_sede}', [IncidenciasController::class, 'index']);
+        
+        // Ruta para obtener incidencias por estado (usado en AJAX)
         Route::get('/api/incidencias', [IncidenciasController::class, 'getByStatus']);
-
-        Route::get('/incidencias/crear', [IncidenciasController::class, 'crear']);
-        Route::get('/incidencias/{id}', [IncidenciasController::class, 'ver'])->name('incidencias.ver');
-    
     });
-
+    
     //rutas tecnicos
     Route::controller(TecnicoController::class)->group(function () {
         Route::get('/tecnicos', [TecnicoController::class, 'index'])->name('crudTecnico');
+        Route::get('/tecnicos/comentarios', [TecnicoController::class, 'getComentarios'])->name('tecnicos.comentarios');
+        Route::get('/tecnicos/historial', [TecnicoController::class, 'getHistorial'])->name('tecnicos.historial');
+        Route::post('/tecnicos/resolver-incidencia', [TecnicoController::class, 'resolverIncidencia'])->name('tecnicos.resolver');
+        Route::post('/tecnicos/cambiar-estado', [TecnicoController::class, 'cambiarEstado'])->name('tecnicos.cambiarEstado');
     });
     //rutas clientes
     Route::controller(ClienteController::class)->group(function () {
         Route::get('/clientes/{id}', [ClienteController::class, 'index'])->name('crudClientes');
         Route::get('/incidencia/{id}', [ClienteController::class, 'show'])->name('incidencias.show');
         Route::get('/incidencias', [ClienteController::class, 'getIncidencias'])->name('incidencias.index');
-
+        Route::post('/incidencias/crear', [ClienteController::class, 'store'])->name('incidencias.store');
+        Route::put('/incidencia/{id}', [ClienteController::class, 'update'])->name('incidencias.update');
+        Route::get('/get-subcategorias/{categoria}', [ClienteController::class, 'getSubcategorias'])->name('get.subcategorias');
+        Route::put('/incidencia/{id}/cerrar', [ClienteController::class, 'cerrar'])->name('incidencias.cerrar');
     });
 });
-
-
-

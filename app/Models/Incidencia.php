@@ -8,7 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Incidencia extends Model
 {
 
-    protected $fillable = ['titulo', 'descripcion', 'comentario', 'estado', 'prioridad', 'user_id', 'sede_id', 'imagen', 'categoria_id', 'subcategoria_id'];
+    protected $fillable = [
+        'titulo', 
+        'descripcion', 
+        'comentario', 
+        'estado', 
+        'prioridad', 
+        'user_id', 
+        'sede_id', 
+        'imagen', 
+        'subcategoria_id',
+        'feedback'
+    ];
 
     public function user()
     {
@@ -34,4 +45,9 @@ class Incidencia extends Model
     {
         return $this->belongsToMany(User::class, 'incidencia_usuario');
     }
+    public function mensajes()
+    {
+        return $this->hasMany(Mensaje::class, 'incidencia_id');
+    }
+
 }

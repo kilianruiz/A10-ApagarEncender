@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h1 class="mb-4">Lista de Incidencias de la sede de Barcelona</h1>
+    <h1 class="mb-4">Lista de Incidencias de la sede de {{ $sede->localización }}</h1>
 
     <!-- Pestañas -->
     <ul class="nav nav-tabs" id="incidenciasTabs" role="tablist">
@@ -125,7 +125,7 @@
                 })
                 .then(data => {
                     console.log(`Datos recibidos para el estado: ${estado}`, data);
-                    
+
                     let tabla = document.getElementById(`tabla-${estadoNormalizado}`);
                     tabla.innerHTML = ""; // Limpiar tabla
 
