@@ -190,37 +190,30 @@ class IncidenciasController extends Controller
     {
         try {
             $user = auth()->user();
-            
+            $sede_id = $user->sede_id;
+
             // Debug de información del usuario
             \Log::info('Información del usuario:', [
                 'user_id' => $user->id,
-                'role_id' => $user->role_id,
-                'sede_id' => $user->sede_id,
-                'user_completo' => $user->toArray()
+                'role' => $user->role,
+                'sede_id' => $sede_id
             ]);
 
-            // Obtener el ID del rol de técnico
-            $tecnicoRoleId = \App\Models\Role::where('nombre', 'tecnico')->first()->id;
+            if ($user->role === 'admin') {
+                $tecnicos = \App\Models\User::where('role', 'tecnico')->get();
+            } else {
+                // Si es jefe de sede, obtener técnicos de su misma sede
+                $tecnicos = \App\Models\User::where('role', 'tecnico')
+                    ->where('sede_id', $sede_id)
+                    ->get();
 
-            $query = \App\Models\User::where('role_id', $tecnicoRoleId);
-
-            if (!$user->role()->where('nombre', 'admin')->exists()) {
-                $query->where('sede_id', $user->sede_id);
+                // Debug de la consulta de técnicos
+                \Log::info('Consulta de técnicos:', [
+                    'sede_id' => $sede_id,
+                    'cantidad_tecnicos' => $tecnicos->count(),
+                    'tecnicos' => $tecnicos->toArray()
+                ]);
             }
-
-            // Debug de la consulta SQL
-            \Log::info('Query SQL:', [
-                'sql' => $query->toSql(),
-                'bindings' => $query->getBindings()
-            ]);
-
-            $tecnicos = $query->get();
-
-            // Debug de resultados
-            \Log::info('Resultados:', [
-                'cantidad' => $tecnicos->count(),
-                'tecnicos' => $tecnicos->toArray()
-            ]);
 
             if ($tecnicos->isEmpty()) {
                 return response()->json(['error' => 'No hay técnicos disponibles en esta sede'], 404);
@@ -231,8 +224,7 @@ class IncidenciasController extends Controller
             \Log::error('Error en obtenerTecnicos:', [
                 'mensaje' => $e->getMessage(),
                 'linea' => $e->getLine(),
-                'archivo' => $e->getFile(),
-                'trace' => $e->getTraceAsString()
+                'archivo' => $e->getFile()
             ]);
             return response()->json(['error' => 'Error al obtener los técnicos'], 500);
         }
