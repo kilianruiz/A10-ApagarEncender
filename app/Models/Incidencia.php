@@ -8,7 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Incidencia extends Model
 {
 
-    protected $fillable = ['titulo', 'descripcion', 'comentario', 'estado', 'prioridad', 'user_id', 'sede_id', 'imagen', 'categoria_id', 'subcategoria_id'];
+    protected $fillable = [
+        'titulo',
+        'descripcion',
+        'comentario',
+        'estado',
+        'prioridad',
+        'feedback',
+        'user_id',
+        'categoria_id',
+        'subcategoria_id',
+        'sede_id'
+    ];
 
     public function user()
     {
@@ -30,8 +41,9 @@ class Incidencia extends Model
         return $this->belongsTo(Subcategoria::class);
     }
 
-    public function usuarios()
+    public function tecnicoAsignado()
     {
-        return $this->belongsToMany(User::class, 'incidencia_usuario', 'incidencia_id', 'user_id');
+        return $this->belongsToMany(User::class, 'incidencia_usuario', 'incidencia_id', 'user_id')
+                    ->orderBy('incidencia_usuario.created_at', 'desc');
     }
 }

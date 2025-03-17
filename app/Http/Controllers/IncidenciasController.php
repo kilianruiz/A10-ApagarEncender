@@ -52,7 +52,11 @@ class IncidenciasController extends Controller
             $user = Auth::user();
             $sede_id = $user->sede_id;
 
+            // Obtener las incidencias con sus relaciones
             $query = Incidencia::with(['user', 'categoria', 'subcategoria'])
+                            ->with(['tecnicoAsignado' => function($query) {
+                                $query->select('users.id', 'users.name');
+                            }])
                             ->where('estado', $estado);
 
             if ($sede_id !== null) {
@@ -60,15 +64,6 @@ class IncidenciasController extends Controller
             }
 
             $incidencias = $query->get();
-
-            // Log para depuración
-            \Log::info('Consulta de incidencias:', [
-                'estado' => $estado,
-                'sede_id' => $sede_id,
-                'count' => $incidencias->count(),
-                'sql' => $query->toSql(),
-                'bindings' => $query->getBindings()
-            ]);
 
             return response()->json($incidencias);
         } catch (\Exception $e) {

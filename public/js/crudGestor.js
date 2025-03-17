@@ -36,10 +36,11 @@ document.addEventListener("DOMContentLoaded", function () {
             data.forEach(incidencia => {
                 console.log('Procesando incidencia:', incidencia);
                 let fila = document.createElement("tr");
-                // Obtener el técnico asignado (el primero en la lista de usuarios)
-                const tecnicoAsignado = incidencia.usuarios && incidencia.usuarios.length > 0 
-                    ? incidencia.usuarios[0] 
-                    : null;
+
+                // Obtener el técnico asignado
+                const tecnicoAsignado = incidencia.tecnico_asignado && incidencia.tecnico_asignado.length > 0 
+                    ? incidencia.tecnico_asignado[0].name 
+                    : 'Sin técnico asignado';
 
                 fila.innerHTML = `
                     <td>${incidencia.id}</td>
@@ -53,10 +54,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${incidencia.subcategoria ? incidencia.subcategoria.nombre : 'Sin Subcategoría'}</td>
                     <td>${incidencia.feedback || ''}</td>
                     <td>${new Date(incidencia.created_at).toLocaleString('es')}</td>
-                    <td>
+                    <td class="text-center">
                         ${incidencia.estado === 'sin asignar' 
                             ? `<button class="btn-abrir-modal btn btn-primary" data-id="${incidencia.id}">Asignar</button>`
-                            : `<span class="text-muted">Técnico: ${tecnicoAsignado ? tecnicoAsignado.name : 'Sin técnico'}</span>`
+                            : `<span class="badge bg-info">Técnico: ${tecnicoAsignado}</span>`
                         }
                     </td>
                 `;
