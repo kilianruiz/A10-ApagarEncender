@@ -188,18 +188,53 @@ class IncidenciasController extends Controller
     // Obtener técnicos disponibles
     public function obtenerTecnicos()
     {
-        $user = Auth::user();
+        try {
+            $user = auth()->user();
+            
+            // Debug de información del usuario
+            \Log::info('Información del usuario:', [
+                'user_id' => $user->id,
+                'role_id' => $user->role_id,
+                'sede_id' => $user->sede_id,
+                'user_completo' => $user->toArray()
+            ]);
 
-        if ($user->role === 'admin') {
-            $tecnicos = \App\Models\User::where('role', 'tecnico')->get();
-        } else {
-            $tecnicos = \App\Models\User::where('jefe_id', $user->id)->get();
+            // Obtener el ID del rol de técnico
+            $tecnicoRoleId = \App\Models\Role::where('nombre', 'tecnico')->first()->id;
+
+            $query = \App\Models\User::where('role_id', $tecnicoRoleId);
+
+            if (!$user->role()->where('nombre', 'admin')->exists()) {
+                $query->where('sede_id', $user->sede_id);
+            }
+
+            // Debug de la consulta SQL
+            \Log::info('Query SQL:', [
+                'sql' => $query->toSql(),
+                'bindings' => $query->getBindings()
+            ]);
+
+            $tecnicos = $query->get();
+
+            // Debug de resultados
+            \Log::info('Resultados:', [
+                'cantidad' => $tecnicos->count(),
+                'tecnicos' => $tecnicos->toArray()
+            ]);
+
+            if ($tecnicos->isEmpty()) {
+                return response()->json(['error' => 'No hay técnicos disponibles en esta sede'], 404);
+            }
+
+            return response()->json($tecnicos);
+        } catch (\Exception $e) {
+            \Log::error('Error en obtenerTecnicos:', [
+                'mensaje' => $e->getMessage(),
+                'linea' => $e->getLine(),
+                'archivo' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Error al obtener los técnicos'], 500);
         }
-
-        if ($tecnicos->isEmpty()) {
-            return response()->json(['error' => 'No tienes técnicos asignados'], 404);
-        }
-
-        return response()->json($tecnicos);
     }
 }
