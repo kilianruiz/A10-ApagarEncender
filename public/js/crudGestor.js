@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td class="text-center">
                         ${incidencia.estado === 'sin asignar' 
                             ? `<button class="btn-abrir-modal btn btn-primary" data-id="${incidencia.id}">Asignar</button>`
-                            : `<span class="badge bg-info">Técnico: ${tecnicoAsignado}</span>`
+                            : `<span class="badge bg-info">${tecnicoAsignado}</span>`
                         }
                     </td>
                 `;
