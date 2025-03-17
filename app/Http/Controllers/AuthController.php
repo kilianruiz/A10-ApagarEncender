@@ -24,7 +24,7 @@ class AuthController extends Controller
 
             // Comprobar el rol del usuario y redirigir según corresponda
             if ($user->role_id == 1) {
-                return redirect('/crudAdmin');
+                return redirect('/admin');
             } elseif ($user->role_id == 2) {
                 return redirect('/clientes/' . $user->id); // Usar el ID del usuario autenticado
             } elseif ($user->role_id == 3) {

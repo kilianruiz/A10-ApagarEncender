@@ -8,8 +8,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('styles/tecnicos.css') }}">
 
-
-  <div class="container mt-4">
+<div class="container mt-4">
     <div class="user-header mb-4 d-flex justify-content-between align-items-center">
         <div class="user-info">
             <h4 class="mb-0">Bienvenido, {{ Auth::user()->name }}</h4>
@@ -18,7 +17,7 @@
             @csrf
             <button type="submit" class="btn btn-outline-danger"><i class="bi bi-box-arrow-right"></i></button>    
         </form>
-      </div>
+    </div>
     @if(session('error'))
         <div class="alert alert-danger">
             {{ session('error') }}
@@ -80,10 +79,10 @@
             </tbody>
         </table>
     </div>
-  </div>
+</div>
 
-  <!-- Modal para ver la incidencia en grande -->
-  <div class="modal fade" id="viewIncidenciaModal" tabindex="-1" role="dialog" aria-labelledby="viewIncidenciaModalLabel" aria-hidden="true">
+<!-- Modal para ver la incidencia en grande -->
+<div class="modal fade" id="viewIncidenciaModal" tabindex="-1" role="dialog" aria-labelledby="viewIncidenciaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -97,10 +96,10 @@
             </div>
         </div>
     </div>
-  </div>
+</div>
 
-  <!-- Modal para editar la incidencia -->
-  <div class="modal fade" id="editIncidenciaModal" tabindex="-1" role="dialog" aria-labelledby="editIncidenciaModalLabel" aria-hidden="true">
+<!-- Modal para editar la incidencia -->
+<div class="modal fade" id="editIncidenciaModal" tabindex="-1" role="dialog" aria-labelledby="editIncidenciaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -110,29 +109,31 @@
                 <form id="editIncidenciaForm">
                     <div class="mb-3">
                         <label for="editTitulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="editTitulo" required>
+                        <input type="text" class="form-control" id="editTitulo" >
+                        <div id="editTituloError" class="text-danger" style="display:none;"></div>
                     </div>
                     <div class="mb-3">
                         <label for="editDescripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="editDescripcion" rows="3" required></textarea>
+                        <textarea class="form-control" id="editDescripcion" rows="3" ></textarea>
+                        <div id="editDescripcionError" class="text-danger" style="display:none;"></div>
                     </div>
                     <div class="mb-3">
                         <label for="editPrioridad" class="form-label">Prioridad</label>
-                        <select class="form-select" id="editPrioridad" required>
+                        <select class="form-select" id="editPrioridad" >
                             <option value="alta">Alta</option>
                             <option value="media">Media</option>
                             <option value="baja">Baja</option>
                         </select>
+                        <div id="editPrioridadError" class="text-danger" style="display:none;"></div>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </form>
             </div>
         </div>
     </div>
-  </div>
+</div>
 
-  <!-- Modal para crear la incidencia -->
-  <div class="modal fade" id="createIncidenciaModal" tabindex="-1" aria-labelledby="createIncidenciaModalLabel" aria-hidden="true">
+<div class="modal fade" id="createIncidenciaModal" tabindex="-1" aria-labelledby="createIncidenciaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -145,45 +146,51 @@
                     
                     <div class="mb-3">
                         <label for="createTitulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="createTitulo" name="titulo" required>
+                        <input type="text" class="form-control" id="createTitulo" name="titulo">
+                        <div id="createTituloError" class="text-danger" style="display:none;"></div>
                     </div>
                     <div class="mb-3">
                         <label for="createDescripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="createDescripcion" name="descripcion" rows="3" required></textarea>
+                        <textarea class="form-control" id="createDescripcion" name="descripcion" rows="3"></textarea>
+                        <div id="createDescripcionError" class="text-danger" style="display:none;"></div>
                     </div>
                     <div class="mb-3">
                         <label for="createCategoria" class="form-label">Categoría</label>
-                        <select class="form-select" id="createCategoria" name="categoria_id" required>
+                        <select class="form-select" id="createCategoria" name="categoria_id">
                             <option value="">Seleccione una categoría</option>
                             @foreach($categorias as $categoria)
                                 <option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>
                             @endforeach
                         </select>
+                        <div id="createCategoriaError" class="text-danger" style="display:none;"></div>
                     </div>
                     <div class="mb-3">
                         <label for="createSubcategoria" class="form-label">Subcategoría</label>
-                        <select class="form-select" id="createSubcategoria" name="subcategoria_id" required disabled>
+                        <select class="form-select" id="createSubcategoria" name="subcategoria_id" disabled>
                             <option value="">Primero seleccione una categoría</option>
                         </select>
+                        <div id="createSubcategoriaError" class="text-danger" style="display:none;"></div>
                     </div>
                     <div class="mb-3">
                         <label for="createPrioridad" class="form-label">Prioridad</label>
-                        <select class="form-select" id="createPrioridad" name="prioridad" required>
+                        <select class="form-select" id="createPrioridad" name="prioridad">
                             <option value="alta">Alta</option>
                             <option value="media">Media</option>
                             <option value="baja">Baja</option>
                         </select>
+                        <div id="createPrioridadError" class="text-danger" style="display:none;"></div>
                     </div>
                     <div class="mb-3">
                         <label for="createImagen" class="form-label">Imagen</label>
                         <input type="file" class="form-control" id="createImagen" name="imagen" accept="image/*">
+                        <div id="createImagenError" class="text-danger" style="display:none;"></div>
                     </div>
                     <button type="submit" class="btn btn-primary">Crear Incidencia</button>
                 </form>
             </div>
         </div>
     </div>
-  </div>
+</div>
 
 @endsection
 
@@ -216,6 +223,6 @@
                 subcategoriaSelect.innerHTML = '<option value="">Primero seleccione una categoría</option>';
             }
         });
+    
     </script>
 @endsection
-

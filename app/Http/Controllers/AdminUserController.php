@@ -120,27 +120,48 @@ class AdminUserController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Encuentra el usuario por su ID
             $user = User::findOrFail($id);
-
-            // Elimina las incidencias asociadas al usuario
-            Incidencia::where('user_id', $user->id)->delete();
-
-            // Actualiza o elimina registros relacionados
-            // Por ejemplo, establecer jefe_id a null para los usuarios que referencian al usuario que se va a eliminar
+    
+            // Buscar un usuario random de la misma sede
+            $nuevoUsuario = User::where('sede_id', $user->sede_id)
+                                ->where('id', '!=', $user->id)
+                                ->inRandomOrder()
+                                ->first();
+    
+            // Si no hay usuarios en la misma sede, elegir cualquier usuario disponible
+            if (!$nuevoUsuario) {
+                $nuevoUsuario = User::where('id', '!=', $user->id)
+                                    ->inRandomOrder()
+                                    ->first();
+            }
+    
+            // Si aún no se encontró un usuario, asignar al usuario con ID = 1 (fallback)
+            $nuevoUsuarioId = $nuevoUsuario ? $nuevoUsuario->id : 1;
+    
+            // Reasignar incidencias
+            Incidencia::where('user_id', $user->id)->update(['user_id' => $nuevoUsuarioId]);
+            DB::table('incidencia_usuario')->where('user_id', $user->id)->update(['user_id' => $nuevoUsuarioId]);
+    
+            // Eliminar referencias en jefe_id
             User::where('jefe_id', $user->id)->update(['jefe_id' => null]);
-
-            // Elimina el usuario
+    
+            // Finalmente, eliminar el usuario
             $user->delete();
-
+    
             DB::commit();
-
-            return response()->json(['message' => 'Usuario e incidencias eliminados exitosamente.']);
+    
+            return response()->json([
+                'message' => "Usuario eliminado y sus incidencias fueron reasignadas al usuario con ID $nuevoUsuarioId."
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Hubo un error al eliminar el usuario o las incidencias: ' . $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error al eliminar usuario: ' . $e->getMessage()
+            ], 500);
         }
     }
+    
+    
     public function edit($id)
     {
         // Buscar el usuario o devolver un error 404 si no existe
@@ -154,4 +175,13 @@ class AdminUserController extends Controller
         return response()->json($user);
     }
     
+    public function getUserIncidencias($id)
+    {
+        $incidencias = Incidencia::where('user_id', $id)
+            ->orWhereHas('usuarios', function($query) use ($id) {
+                $query->where('user_id', $id);
+            })
+            ->get();
+        return response()->json($incidencias);
+    }
 }

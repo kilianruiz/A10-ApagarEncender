@@ -15,7 +15,6 @@ $(document).ready(function() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data); // Verifica los datos recibidos
             if (data.usuarios && Array.isArray(data.usuarios)) {
                 let tabla = '';
                 data.usuarios.forEach(user => {
@@ -23,32 +22,40 @@ $(document).ready(function() {
                     str += `<td>${user.email}</td>`;
                     str += `<td>${user.role ? user.role.nombre : 'Sin rol'}</td>`;
                     str += `<td>${user.sede ? user.sede.nombre : 'Sin sede'}</td>`;
-                    str += `<td class="d-flex flex-row" style="gap:20px;">`;
+                    str += `<td class="d-flex flex-row justify-content-center" style="gap:10px;">`;
+                    str += `<div class="btn-group">`;
                     if (user.role_id !== 1) { // Suponiendo que el rol de administrador tiene el ID 1
-                        str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})">Editar</button>`;
+                        str += `<button type='button' class='btn btn-success' onclick="Editar(${user.id})"><i class="fas fa-edit"></i></button>`;
                     } else {
-                        str += `<button type='button' class='btn btn-success' disabled>Editar</button>`;
+                        str += `<button type='button' class='btn btn-success' disabled><i class="fas fa-edit"></i></button>`;
                     }
                     if (user.role_id !== 1) { // Suponiendo que el rol de administrador tiene el ID 1
-                        str += `<button type='button' class='btn btn-danger' onclick="Eliminar(${user.id})">Eliminar</button>`;
+                        str += `<button type='button' class='btn btn-danger' onclick="Eliminar(${user.id})"><i class="fas fa-trash"></i></button>`;
                     } else {
-                        str += `<button type='button' class='btn btn-danger' disabled>Eliminar</button>`;
+                        str += `<button type='button' class='btn btn-danger' disabled><i class="fas fa-trash"></i></button>`;
                     }
-                    str += `</td></tr>`;
+                        str += `<button type='button' class='btn btn-primary' id='btn-incidencias-${user.id}' onclick="AsignarIncidencia(${user.id})"><i class="fas fa-eye"></i></button>`;
+                    str += `</div></td></tr>`;
                     tabla += str;
                 });
                 resultado.innerHTML = tabla;
 
+                // Verificar incidencias para cada usuario
+                data.usuarios.forEach(user => {
+                    const buttonElement = document.getElementById(`btn-incidencias-${user.id}`);
+                    verificarIncidencias(user.id, buttonElement);
+                });
+
                 // Generar elementos de paginación
-                let pagination = '<nav aria-label="Page navigation example"><ul class="pagination">';
+                let pagination = '<nav aria-label="Page navigation example"><ul class="pagination justify-content-center">';
                 if (data.pagination.current_page > 1) {
-                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page - 1})">Previous</a></li>`;
+                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page - 1})">Anterior</a></li>`;
                 }
                 for (let i = 1; i <= data.pagination.last_page; i++) {
                     pagination += `<li class="page-item ${i === data.pagination.current_page ? 'active' : ''}"><a class="page-link" href="#" onclick="ListarProductos(${i})">${i}</a></li>`;
                 }
                 if (data.pagination.current_page < data.pagination.last_page) {
-                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page + 1})">Next</a></li>`;
+                    pagination += `<li class="page-item"><a class="page-link" href="#" onclick="ListarProductos(${data.pagination.current_page + 1})">Siguiente</a></li>`;
                 }
                 pagination += '</ul></nav>';
                 document.getElementById('paginationControls').innerHTML = pagination;
@@ -131,7 +138,7 @@ $(document).ready(function() {
         const formdata = new FormData(this);
         formdata.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
 
-        fetch("{{ route('crudAdmin.store') }}", {
+        fetch("/admin/create", {
             method: 'POST',
             body: formdata
         })
@@ -194,16 +201,15 @@ $(document).ready(function() {
     });
 });
 
-    // Función para eliminar un usuario
     window.Eliminar = function(id) {
         Swal.fire({
-            title: 'Está seguro de eliminar?',
+            title: '¿Está seguro de eliminar este usuario?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Si!',
-            cancelButtonText: 'NO'
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch(`/admin/users/${id}`, {
@@ -215,20 +221,84 @@ $(document).ready(function() {
                 })
                 .then(response => response.json())
                 .then(responseText => {
-                    if (responseText.message === "Usuario e incidencias eliminados exitosamente.") {
+                    if (responseText.message) {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Usuario e incidencias eliminados exitosamente',
+                            title: 'Usuario eliminado',
+                            text: responseText.message,
                             showConfirmButton: false,
-                            timer: 1100
+                            timer: 1500
                         });
+
+                        // Recargar la lista de usuarios después de eliminar
                         ListarProductos();
+                    } else {
+                        throw new Error(responseText.error || 'Error desconocido');
                     }
                 })
                 .catch(error => {
-                    console.error('Error al eliminar el usuario:', error);
+                    console.error('Error al eliminar usuario:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo eliminar el usuario. Verifique la consola para más detalles.',
+                        confirmButtonText: 'Aceptar'
+                    });
                 });
             }
+        });
+    };
+
+
+    function verificarIncidencias(userId, buttonElement) {
+        fetch(`/admin/users/${userId}/incidencias`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                buttonElement.disabled = false;
+            } else {
+                buttonElement.disabled = true;
+            }
+        })
+        .catch(error => {
+            console.error('Error al verificar las incidencias:', error);
+        });
+    }
+
+    window.AsignarIncidencia = function(userId) {
+        fetch(`/admin/users/${userId}/incidencias`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const incidenciasList = document.getElementById('incidenciasList');
+            incidenciasList.innerHTML = '';
+            if (data.length > 0) {
+                data.forEach(incidencia => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.innerHTML = `
+                        <strong>Título:</strong> ${incidencia.titulo}<br>
+                        <strong>Comentario:</strong> ${incidencia.comentario ? incidencia.comentario : 'No rellenado'}<br>
+                        <strong>Imagen:</strong> ${incidencia.imagen ? `<img src="${incidencia.imagen}" alt="Imagen" style="max-width: 100px;">` : 'No disponible'}<br>
+                    `;
+                    incidenciasList.appendChild(listItem);
+                });
+                $('#incidenciasModal').modal('show');
+            } else {
+                alert('Este usuario no tiene incidencias.');
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener las incidencias:', error);
         });
     };
 });
