@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Incidencia extends Model
 {
-
     protected $fillable = [
         'titulo',
         'descripcion',
@@ -41,21 +40,9 @@ class Incidencia extends Model
         return $this->belongsTo(Subcategoria::class);
     }
 
-    public function tecnicoAsignado()
-    {
-        return $this->belongsToMany(User::class, 'incidencia_usuario', 'incidencia_id', 'user_id')
-                    ->orderBy('incidencia_usuario.created_at', 'desc');
-    }
-
+    // RELACIÓN TECNICOS ASIGNADOS:
     public function usuarios()
     {
-        return $this->belongsToMany(User::class, 'incidencia_usuario', 'incidencia_id', 'user_id')
-                    ->withTimestamps();
+        return $this->belongsToMany(User::class, 'incidencia_usuario', 'incidencia_id', 'user_id')->withTimestamps();
     }
-
-    public function mensajes()
-    {
-        return $this->hasMany(Mensaje::class, 'incidencia_id');
-    }
-
 }

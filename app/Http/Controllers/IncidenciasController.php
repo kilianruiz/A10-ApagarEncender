@@ -15,28 +15,32 @@ class IncidenciasController extends Controller
     {
         $user = Auth::user();
         $sede = \App\Models\Sede::where('localización', $nombre_sede)->first();
-
+    
         if (!$sede || $sede->id !== $user->sede_id) {
             return abort(404, 'Sede no encontrada o no pertenece a tu usuario');
         }
-
+    
         $sin_asignar = Incidencia::where('estado', 'sin asignar')
                                 ->where('sede_id', $sede->id)
                                 ->get();
-
-        $asignadas = Incidencia::whereIn('estado', ['asignada', 'en proceso'])
+    
+        $asignadas = Incidencia::where('estado', 'asignada')
                                 ->where('sede_id', $sede->id)
                                 ->get();
-
+    
+        $en_proceso = Incidencia::where('estado', 'en proceso')
+                                ->where('sede_id', $sede->id)
+                                ->get();
+    
         $resueltas = Incidencia::where('estado', 'resuelta')
                                 ->where('sede_id', $sede->id)
                                 ->get();
-
+    
         $cerradas = Incidencia::where('estado', 'cerrada')
                                 ->where('sede_id', $sede->id)
                                 ->get();
-
-        return view('crudGestor.index', compact('sin_asignar', 'asignadas', 'resueltas', 'cerradas', 'sede', 'user'));
+    
+        return view('crudGestor.index', compact('sin_asignar', 'asignadas', 'en_proceso', 'resueltas', 'cerradas', 'sede', 'user'));
     }
 
     // Obtener incidencias por estado a través de AJAX
@@ -47,95 +51,42 @@ class IncidenciasController extends Controller
             $titulo = $request->query('titulo');
             $prioridad = $request->query('prioridad');
             $tecnico_id = $request->query('tecnico_id');
-            $sede_id = Auth::user()->sede_id;
 
-            // Construir la consulta base con joins explícitos
-            $query = Incidencia::select(
-                'incidencias.*',
-                'subcategorias.nombre as subcategoria_nombre',
-                'categorias.nombre as categoria_nombre'
-            )
-            ->leftJoin('subcategorias', 'incidencias.subcategoria_id', '=', 'subcategorias.id')
-            ->leftJoin('categorias', 'subcategorias.categoria_id', '=', 'categorias.id')
-            ->leftJoin('users', 'incidencias.user_id', '=', 'users.id')
-            ->with(['usuarios']);
+            $user = auth()->user();
+            $sede_id = $user ? $user->sede_id : null;
 
-            // Debug de la consulta base
-            \Log::info('Query base:', [
-                'sql' => $query->toSql(),
-                'bindings' => $query->getBindings()
-            ]);
+            $query = \App\Models\Incidencia::query()
+                ->with(['user', 'usuarios', 'categoria', 'subcategoria'])
+                ->where('estado', $estado);
 
-            // Aplicar filtro por estado
-            $query->where('incidencias.estado', $estado);
-
-            // Filtrar por sede si el usuario tiene una asignada
             if ($sede_id) {
-                $query->where('incidencias.sede_id', $sede_id);
+                $query->where('sede_id', $sede_id);
             }
 
-            // Filtrar por título si se proporciona
             if ($titulo) {
-                $query->where('incidencias.titulo', 'LIKE', "%{$titulo}%");
+                $query->where('titulo', 'like', "%{$titulo}%");
             }
 
-            // Filtrar por prioridad si se proporciona
             if ($prioridad) {
-                $query->where('incidencias.prioridad', $prioridad);
+                $query->where('prioridad', $prioridad);
             }
 
-            // Filtrar por técnico si se proporciona
             if ($tecnico_id) {
-                $query->whereHas('usuarios', function($query) use ($tecnico_id) {
-                    $query->where('users.id', $tecnico_id);
+                $query->whereHas('usuarios', function ($q) use ($tecnico_id) {
+                    $q->where('users.id', $tecnico_id);
                 });
             }
 
             $incidencias = $query->get();
 
-            // Debug de la primera incidencia
-            if ($incidencias->count() > 0) {
-                $primeraIncidencia = $incidencias->first();
-                \Log::info('Primera incidencia:', [
-                    'id' => $primeraIncidencia->id,
-                    'categoria_nombre' => $primeraIncidencia->categoria_nombre,
-                    'subcategoria_nombre' => $primeraIncidencia->subcategoria_nombre,
-                    'raw' => $primeraIncidencia->toArray()
-                ]);
-            }
-
-            // Transformar los datos para la respuesta
-            $incidencias = $incidencias->map(function ($incidencia) {
-                return [
-                    'id' => $incidencia->id,
-                    'titulo' => $incidencia->titulo,
-                    'descripcion' => $incidencia->descripcion,
-                    'comentario' => $incidencia->comentario,
-                    'estado' => $incidencia->estado,
-                    'prioridad' => $incidencia->prioridad,
-                    'user' => $incidencia->user ? $incidencia->user->name : 'No asignado',
-                    'categoria' => $incidencia->categoria_nombre ?? 'Sin categoría',
-                    'subcategoria' => $incidencia->subcategoria_nombre ?? 'Sin subcategoría',
-                    'feedback' => $incidencia->feedback,
-                    'created_at' => $incidencia->created_at,
-                    'tecnico_asignado' => $incidencia->usuarios->map(function ($usuario) {
-                        return [
-                            'id' => $usuario->id,
-                            'name' => $usuario->name
-                        ];
-                    })
-                ];
-            });
-
             return response()->json($incidencias);
         } catch (\Exception $e) {
-            \Log::error('Error en getByStatus:', [
-                'mensaje' => $e->getMessage(),
-                'linea' => $e->getLine(),
-                'archivo' => $e->getFile(),
-                'trace' => $e->getTraceAsString()
+            \Log::error('Error en getByStatus', [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
             ]);
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Error al obtener incidencias'], 500);
         }
     }
 
@@ -190,11 +141,11 @@ class IncidenciasController extends Controller
     {
         try {
             $user = auth()->user();
-        
+
             if (!$user) {
                 return response()->json([], 200);
             }
-        
+
             if ($user->role && $user->role->nombre === 'admin') {
                 $tecnicos = \App\Models\User::whereHas('role', function ($query) {
                     $query->where('nombre', 'tecnico');
@@ -208,7 +159,7 @@ class IncidenciasController extends Controller
             } else {
                 return response()->json([], 200);
             }
-        
+
             return response()->json($tecnicos, 200);
         } catch (\Exception $e) {
             \Log::error('Error en obtenerTecnicos:', [

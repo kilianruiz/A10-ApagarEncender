@@ -118,9 +118,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 let fila = document.createElement("tr");
 
                 // Obtener el técnico asignado
-                const tecnicoAsignado = incidencia.tecnico_asignado && incidencia.tecnico_asignado.length > 0 
-                    ? incidencia.tecnico_asignado[0].name 
-                    : 'Sin técnico asignado';
+                const tecnicoAsignado = incidencia.tecnico || 'Sin técnico asignado';
+                const informador = incidencia.informador ? incidencia.informador : 'No asignado';
 
                 fila.innerHTML = `
                     <td>${incidencia.id}</td>
@@ -129,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${incidencia.comentario || ''}</td>
                     <td>${incidencia.estado}</td>
                     <td>${incidencia.prioridad || ''}</td>
-                    <td>${incidencia.user}</td>
+                    <td>${informador}</td>
                     <td>${incidencia.categoria}</td>
                     <td>${incidencia.subcategoria}</td>
                     <td>${incidencia.feedback || ''}</td>
@@ -137,14 +136,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td class="text-center">
                         ${incidencia.estado === 'sin asignar' 
                             ? `<button class="btn-abrir-modal btn btn-primary" data-id="${incidencia.id}">Asignar</button>`
-                            : `<span class="badge bg-info">${tecnicoAsignado}</span>`
+                            : `<span class="badge bg-info">${incidencia.tecnico || 'Sin técnico asignado'}</span>`
                         }
                     </td>
                 `;
                 tabla.appendChild(fila);
 
                 // Añadir evento al botón si es una incidencia sin asignar
-                if (incidencia.estado === 'sin asignar') {
+                if (incidencia.estado === 'sin_asignar') {
                     const btnAsignar = fila.querySelector('.btn-abrir-modal');
                     if (btnAsignar) {
                         btnAsignar.addEventListener('click', function() {
