@@ -14,10 +14,10 @@ class IncidenciasController extends Controller
     public function index($nombre_sede)
     {
         $user = Auth::user();
-        $sede = $user->sede()->where('localización', $nombre_sede)->first();
+        $sede = \App\Models\Sede::where('localización', $nombre_sede)->first();
 
-        if (!$sede) {
-            return abort(404, 'Sede no encontrada');
+        if (!$sede || $sede->id !== $user->sede_id) {
+            return abort(404, 'Sede no encontrada o no pertenece a tu usuario');
         }
 
         $sin_asignar = Incidencia::where('estado', 'sin asignar')
@@ -190,43 +190,33 @@ class IncidenciasController extends Controller
     {
         try {
             $user = auth()->user();
-            $sede_id = $user->sede_id;
-
-            // Debug de información del usuario
-            \Log::info('Información del usuario:', [
-                'user_id' => $user->id,
-                'role' => $user->role,
-                'sede_id' => $sede_id
-            ]);
-
-            if ($user->role === 'admin') {
-                $tecnicos = \App\Models\User::where('role', 'tecnico')->get();
-            } else {
-                // Si es jefe de sede, obtener técnicos de su misma sede
-                $tecnicos = \App\Models\User::where('role', 'tecnico')
-                    ->where('sede_id', $sede_id)
+        
+            if (!$user) {
+                return response()->json([], 200);
+            }
+        
+            if ($user->role && $user->role->nombre === 'admin') {
+                $tecnicos = \App\Models\User::whereHas('role', function ($query) {
+                    $query->where('nombre', 'tecnico');
+                })->get();
+            } elseif ($user->sede_id) {
+                $tecnicos = \App\Models\User::whereHas('role', function ($query) {
+                        $query->where('nombre', 'tecnico');
+                    })
+                    ->where('sede_id', $user->sede_id)
                     ->get();
-
-                // Debug de la consulta de técnicos
-                \Log::info('Consulta de técnicos:', [
-                    'sede_id' => $sede_id,
-                    'cantidad_tecnicos' => $tecnicos->count(),
-                    'tecnicos' => $tecnicos->toArray()
-                ]);
+            } else {
+                return response()->json([], 200);
             }
-
-            if ($tecnicos->isEmpty()) {
-                return response()->json(['error' => 'No hay técnicos disponibles en esta sede'], 404);
-            }
-
-            return response()->json($tecnicos);
+        
+            return response()->json($tecnicos, 200);
         } catch (\Exception $e) {
             \Log::error('Error en obtenerTecnicos:', [
                 'mensaje' => $e->getMessage(),
                 'linea' => $e->getLine(),
                 'archivo' => $e->getFile()
             ]);
-            return response()->json(['error' => 'Error al obtener los técnicos'], 500);
+            return response()->json([], 200);
         }
     }
 }

@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     let filtrosActuales = {};
+    let tecnicosCargados = []; // Variable para guardar los técnicos una vez
 
     // Inicializar eventos de filtros
     const estados = ['sin_asignar', 'asignada', 'en_proceso', 'resuelta', 'cerrada'];
@@ -148,11 +149,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (btnAsignar) {
                         btnAsignar.addEventListener('click', function() {
                             incidenciaIdInput.value = incidencia.id;
-                            cargarTecnicos();
+                            actualizarSelectTecnicos(); // <- solo actualizas los selects usando los técnicos ya cargados
                             modal.style.display = "flex";
                             modal.classList.add("show");
                             document.body.style.overflow = 'hidden';
-                        });
+                        });                        
                     }
                 }
             });
@@ -171,30 +172,9 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch("/api/tecnicos")
             .then(response => response.json())
             .then(tecnicos => {
-                // Llenar el select del modal
-                tecnicoSelect.innerHTML = '<option value="">Seleccione un técnico</option>';
-                tecnicos.forEach(tecnico => {
-                    let option = document.createElement("option");
-                    option.value = tecnico.id;
-                    option.textContent = tecnico.name;
-                    tecnicoSelect.appendChild(option);
-                });
-
-                // Llenar los selects de filtros
-                estados.forEach(estado => {
-                    if (estado !== 'sin_asignar') {
-                        const filtroTecnico = document.getElementById(`filtroTecnico-${estado}`);
-                        if (filtroTecnico) {
-                            filtroTecnico.innerHTML = '<option value="">Todos los técnicos</option>';
-                            tecnicos.forEach(tecnico => {
-                                let option = document.createElement("option");
-                                option.value = tecnico.id;
-                                option.textContent = tecnico.name;
-                                filtroTecnico.appendChild(option);
-                            });
-                        }
-                    }
-                });
+                tecnicosCargados = tecnicos; // Guardarlos en memoria para uso posterior
+    
+                actualizarSelectTecnicos();
             })
             .catch(error => {
                 console.error("Error al cargar técnicos:", error);
@@ -206,6 +186,34 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
     }
+
+    function actualizarSelectTecnicos() {
+        // Limpiar el select del modal
+        tecnicoSelect.innerHTML = tecnicosCargados.length > 0
+            ? '<option value="">Seleccione un técnico</option>'
+            : '<option value="">No hay técnicos disponibles</option>';
+    
+        tecnicosCargados.forEach(tecnico => {
+            const option = new Option(tecnico.name, tecnico.id);
+            tecnicoSelect.appendChild(option);
+        });
+    
+        // Limpiar y rellenar los filtros por técnico de cada pestaña
+        estados.forEach(estado => {
+            if (estado !== 'sin_asignar') {
+                const filtroTecnico = document.getElementById(`filtroTecnico-${estado}`);
+                if (filtroTecnico) {
+                    filtroTecnico.innerHTML = tecnicosCargados.length > 0
+                        ? '<option value="">Todos los técnicos</option>'
+                        : '<option value="">No hay técnicos disponibles</option>';
+                    tecnicosCargados.forEach(tecnico => {
+                        const option = new Option(tecnico.name, tecnico.id);
+                        filtroTecnico.appendChild(option);
+                    });
+                }
+            }
+        });
+    }    
 
     // Inicialización del modal y sus elementos
     const modal = document.getElementById("modal-asignar");

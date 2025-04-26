@@ -32,9 +32,10 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    // App\Models\User.php
     public function sede()
     {
-        return $this->belongsTo(Sede::class);
+        return $this->belongsTo(\App\Models\Sede::class, 'sede_id');
     }
 
     public function jefe()
