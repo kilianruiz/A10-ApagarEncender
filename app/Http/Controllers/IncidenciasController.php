@@ -15,31 +15,31 @@ class IncidenciasController extends Controller
     {
         $user = Auth::user();
         $sede = \App\Models\Sede::where('localización', $nombre_sede)->first();
-    
+
         if (!$sede || $sede->id !== $user->sede_id) {
             return abort(404, 'Sede no encontrada o no pertenece a tu usuario');
         }
-    
+
         $sin_asignar = Incidencia::where('estado', 'sin asignar')
                                 ->where('sede_id', $sede->id)
                                 ->get();
-    
+
         $asignadas = Incidencia::where('estado', 'asignada')
                                 ->where('sede_id', $sede->id)
                                 ->get();
-    
+
         $en_proceso = Incidencia::where('estado', 'en proceso')
                                 ->where('sede_id', $sede->id)
                                 ->get();
-    
+
         $resueltas = Incidencia::where('estado', 'resuelta')
                                 ->where('sede_id', $sede->id)
                                 ->get();
-    
+
         $cerradas = Incidencia::where('estado', 'cerrada')
                                 ->where('sede_id', $sede->id)
                                 ->get();
-    
+
         return view('crudGestor.index', compact('sin_asignar', 'asignadas', 'en_proceso', 'resueltas', 'cerradas', 'sede', 'user'));
     }
 
@@ -51,37 +51,64 @@ class IncidenciasController extends Controller
             $titulo = $request->query('titulo');
             $prioridad = $request->query('prioridad');
             $tecnico_id = $request->query('tecnico_id');
-
+        
             $user = auth()->user();
             $sede_id = $user ? $user->sede_id : null;
-
-            $query = \App\Models\Incidencia::query()
-                ->with(['user', 'usuarios', 'categoria', 'subcategoria'])
+        
+            $query = Incidencia::query()
+                ->with(['user', 'usuarios', 'categoria', 'subcategoria.categoria'])
                 ->where('estado', $estado);
-
+        
             if ($sede_id) {
                 $query->where('sede_id', $sede_id);
             }
-
+        
             if ($titulo) {
                 $query->where('titulo', 'like', "%{$titulo}%");
             }
-
+        
             if ($prioridad) {
                 $query->where('prioridad', $prioridad);
             }
-
+        
             if ($tecnico_id) {
                 $query->whereHas('usuarios', function ($q) use ($tecnico_id) {
                     $q->where('users.id', $tecnico_id);
                 });
             }
-
+        
             $incidencias = $query->get();
-
-            return response()->json($incidencias);
+        
+            $resultado = $incidencias->map(function ($incidencia) {
+                $tecnico = $incidencia->usuarios->sortByDesc('pivot.created_at')->first();
+            
+                $categoriaNombre = null;
+                if ($incidencia->categoria) {
+                    $categoriaNombre = $incidencia->categoria->nombre_categoria;
+                } elseif ($incidencia->subcategoria && $incidencia->subcategoria->categoria) {
+                    $categoriaNombre = $incidencia->subcategoria->categoria->nombre_categoria;
+                }
+            
+                return [
+                    'id' => $incidencia->id,
+                    'titulo' => $incidencia->titulo,
+                    'descripcion' => $incidencia->descripcion,
+                    'comentario' => $incidencia->comentario,
+                    'estado' => $incidencia->estado,
+                    'prioridad' => $incidencia->prioridad,
+                    'informador' => $incidencia->user ? $incidencia->user->name : 'No asignado',
+                    'categoria' => $categoriaNombre ?? 'Sin categoría',
+                    'subcategoria' => $incidencia->subcategoria ? $incidencia->subcategoria->nombre : 'Sin subcategoría',
+                    'feedback' => $incidencia->feedback,
+                    'created_at' => $incidencia->created_at,
+                    'tecnico' => $tecnico ? $tecnico->name : null,
+                ];
+            });
+        
+            return response()->json($resultado);
+        
         } catch (\Exception $e) {
-            \Log::error('Error en getByStatus', [
+            Log::error('Error en getByStatus', [
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),

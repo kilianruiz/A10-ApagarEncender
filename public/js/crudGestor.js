@@ -71,56 +71,46 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log('Estado recibido:', estado);
         let estadoNormalizado = estado.replace(/\s/g, "_");
         console.log('Estado normalizado:', estadoNormalizado);
-
-        // Construir URL con filtros
+    
         let url = new URL(`${window.location.origin}/api/incidencias`);
         url.searchParams.append('estado', estadoNormalizado);
-
-        // Añadir filtros activos
+    
         const filtros = filtrosActuales[estadoNormalizado];
         if (filtros.titulo) url.searchParams.append('titulo', filtros.titulo);
         if (filtros.prioridad) url.searchParams.append('prioridad', filtros.prioridad);
         if (filtros.tecnico_id) url.searchParams.append('tecnico_id', filtros.tecnico_id);
-
+    
         console.log('URL de la petición:', url.toString());
-
+    
         fetch(url, {
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => {
-            console.log('Status de la respuesta:', response.status);
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             console.log('Datos recibidos:', data);
-            
+    
             let tabla = document.getElementById(`tabla-${estadoNormalizado}`);
             if (!tabla) {
                 console.error('No se encontró la tabla para el estado:', estadoNormalizado);
                 return;
             }
-
-            if (data.error) {
-                console.error('Error del servidor:', data.error);
-                tabla.innerHTML = `<tr><td colspan='12'>Error: ${data.error}</td></tr>`;
+    
+            if (!Array.isArray(data)) {
+                console.error('Respuesta inesperada:', data);
+                tabla.innerHTML = `<tr><td colspan="12">Error: respuesta inesperada</td></tr>`;
                 return;
             }
-
+    
             tabla.innerHTML = data.length === 0
-                ? `<tr><td colspan='12'>No hay incidencias ${estadoNormalizado.replace(/_/g, ' ')}</td></tr>`
+                ? `<tr><td colspan="12">No hay incidencias ${estadoNormalizado.replace(/_/g, ' ')}</td></tr>`
                 : "";
-
+    
             data.forEach(incidencia => {
-                console.log('Procesando incidencia:', incidencia);
-                let fila = document.createElement("tr");
-
-                // Obtener el técnico asignado
-                const tecnicoAsignado = incidencia.tecnico || 'Sin técnico asignado';
-                const informador = incidencia.informador ? incidencia.informador : 'No asignado';
-
+                const fila = document.createElement('tr');
+    
                 fila.innerHTML = `
                     <td>${incidencia.id}</td>
                     <td>${incidencia.titulo}</td>
@@ -128,43 +118,30 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${incidencia.comentario || ''}</td>
                     <td>${incidencia.estado}</td>
                     <td>${incidencia.prioridad || ''}</td>
-                    <td>${informador}</td>
+                    <td>${incidencia.informador}</td>
                     <td>${incidencia.categoria}</td>
                     <td>${incidencia.subcategoria}</td>
                     <td>${incidencia.feedback || ''}</td>
                     <td>${new Date(incidencia.created_at).toLocaleString('es')}</td>
                     <td class="text-center">
-                        ${incidencia.estado === 'sin asignar' 
+                        ${incidencia.estado === 'sin asignar'
                             ? `<button class="btn-abrir-modal btn btn-primary" data-id="${incidencia.id}">Asignar</button>`
                             : `<span class="badge bg-info">${incidencia.tecnico || 'Sin técnico asignado'}</span>`
                         }
                     </td>
                 `;
+    
                 tabla.appendChild(fila);
-
-                // Añadir evento al botón si es una incidencia sin asignar
-                if (incidencia.estado === 'sin_asignar') {
-                    const btnAsignar = fila.querySelector('.btn-abrir-modal');
-                    if (btnAsignar) {
-                        btnAsignar.addEventListener('click', function() {
-                            incidenciaIdInput.value = incidencia.id;
-                            actualizarSelectTecnicos(); // <- solo actualizas los selects usando los técnicos ya cargados
-                            modal.style.display = "flex";
-                            modal.classList.add("show");
-                            document.body.style.overflow = 'hidden';
-                        });                        
-                    }
-                }
             });
         })
         .catch(error => {
-            console.error("Error al cargar incidencias:", error);
+            console.error('Error al cargar incidencias:', error);
             let tabla = document.getElementById(`tabla-${estadoNormalizado}`);
             if (tabla) {
-                tabla.innerHTML = `<tr><td colspan='12'>Error al cargar las incidencias: ${error.message}</td></tr>`;
+                tabla.innerHTML = `<tr><td colspan="12">Error al cargar incidencias</td></tr>`;
             }
         });
-    }
+    }    
 
     // Cargar técnicos en el select
     function cargarTecnicos() {

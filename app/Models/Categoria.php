@@ -25,6 +25,6 @@ class Categoria extends Model
     // Accessor para mantener compatibilidad
     public function getNombreAttribute()
     {
-        return $this->nombre_categoria;
+        return $this->attributes['nombre_categoria'];
     }
 }
