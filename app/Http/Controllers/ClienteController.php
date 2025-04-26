@@ -89,7 +89,7 @@ class ClienteController extends Controller
             'imagen' => 'nullable|image|max:2048',
             'subcategoria_id' => 'required|exists:subcategorias,id',
             'sede_id' => 'required|exists:sedes,id'
-        ]);
+        ]);        
 
         // Procesar la imagen si es que se sube
         $imagenPath = null;
@@ -97,16 +97,15 @@ class ClienteController extends Controller
             $imagenPath = $request->file('imagen')->store('incidencias', 'public');
         }
 
-        // Crear la nueva incidencia
         $incidencia = Incidencia::create([
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
+            'comentario' => null,
             'estado' => 'sin_asignar',
             'prioridad' => $request->prioridad,
             'user_id' => Auth::id(),
             'sede_id' => $request->sede_id,
             'imagen' => $imagenPath,
-            'categoria_id' => $request->categoria_id,
             'subcategoria_id' => $request->subcategoria_id,
         ]);
 
