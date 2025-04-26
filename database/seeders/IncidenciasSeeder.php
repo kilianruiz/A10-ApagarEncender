@@ -20,7 +20,7 @@ class IncidenciasSeeder extends Seeder
                 'titulo' => 'Fallo en el sistema de impresión',
                 'descripcion' => 'La impresora no imprime correctamente los documentos.',
                 'comentario' => null,
-                'estado' => 'sin asignar',
+                'estado' => 'sin_asignar',
                 'prioridad' => 'alta',
                 'user_id' => 58, // ID del usuario que reporta la incidencia
                 'sede_id' => 1, // ID de la sede donde ocurre la incidencia
@@ -79,7 +79,7 @@ class IncidenciasSeeder extends Seeder
                 'titulo' => 'prueba resuelta',
                 'descripcion' => 'prueba resuelta',
                 'comentario' => null,
-                'estado' => 'sin asignar',
+                'estado' => 'sin_asignar',
                 'prioridad' => 'media',
                 'user_id' => 58,
                 'sede_id' => 1,
@@ -91,7 +91,7 @@ class IncidenciasSeeder extends Seeder
                 'titulo' => 'Opa opa',
                 'descripcion' => 'Opa opa cerrada',
                 'comentario' => null,
-                'estado' => 'en proceso',
+                'estado' => 'en_proceso',
                 'prioridad' => 'media',
                 'user_id' => 58,
                 'sede_id' => 1,
