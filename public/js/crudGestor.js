@@ -132,6 +132,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 `;
     
                 tabla.appendChild(fila);
+
+                // Añadir evento al botón de Asignar si corresponde
+                if (incidencia.estado === 'sin asignar') {
+                    const btnAsignar = fila.querySelector('.btn-abrir-modal');
+                    if (btnAsignar) {
+                        btnAsignar.addEventListener('click', function () {
+                            incidenciaIdInput.value = incidencia.id;
+                            actualizarSelectTecnicos(); 
+                            modal.style.display = "flex";
+                            modal.classList.add("show");
+                            document.body.style.overflow = 'hidden';
+                        });
+                    }
+                }
+
             });
         })
         .catch(error => {
