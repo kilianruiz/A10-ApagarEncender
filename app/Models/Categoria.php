@@ -10,7 +10,7 @@ class Categoria extends Model
     use HasFactory;
 
     protected $table = 'categorias';
-    protected $fillable = ['nombre_categoria'];
+    protected $fillable = ['nombre'];
 
     public function subcategorias()
     {
@@ -20,11 +20,5 @@ class Categoria extends Model
     public function incidencias()
     {
         return $this->hasMany(Incidencia::class);
-    }
-
-    // Accessor para mantener compatibilidad
-    public function getNombreAttribute()
-    {
-        return $this->nombre_categoria;
     }
 }

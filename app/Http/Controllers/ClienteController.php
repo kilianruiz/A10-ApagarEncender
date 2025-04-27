@@ -42,13 +42,13 @@ class ClienteController extends Controller
             // Manejar diferentes casos de estado
             switch ($estado) {
                 case 'sin_asignar':
-                    $query->where('estado', 'sin_asignar');
+                    $query->where('estado', 'sin asignar');
                     break;
                 case 'asignadas':
                     $query->whereIn('estado', ['asignada']);
                     break;
                 case 'en_proceso':
-                    $query->where('estado', 'en_proceso');
+                    $query->where('estado', 'en proceso');
                     break;
                 case 'resueltas':
                     $query->where('estado', 'resuelta');
@@ -101,7 +101,7 @@ class ClienteController extends Controller
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
             'comentario' => null,
-            'estado' => 'sin_asignar',
+            'estado' => 'sin asignar',
             'prioridad' => $request->prioridad,
             'user_id' => Auth::id(),
             'sede_id' => $request->sede_id,
