@@ -46,7 +46,7 @@
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
-                </thead>
+                </thead>                
                 <tbody id="pendientes-body"></tbody>
             </table>
             <div id="no-pendientes" class="alert alert-info d-none">No hay incidencias pendientes.</div>
@@ -66,7 +66,7 @@
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
-                </thead>
+                </thead>                
                 <tbody id="en-proceso-body"></tbody>
             </table>
             <div id="no-en-proceso" class="alert alert-info d-none">No hay incidencias en proceso.</div>
@@ -83,10 +83,9 @@
                         <th>Comentario</th>
                         <th>Imagen</th>
                         <th>Fecha</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th>Feedback Técnico</th>
                     </tr>
-                </thead>
+                </thead>                
                 <tbody id="resueltas-body"></tbody>
             </table>
             <div id="no-resueltas" class="alert alert-info d-none">No hay incidencias resueltas.</div>
@@ -103,10 +102,9 @@
                         <th>Comentario</th>
                         <th>Imagen</th>
                         <th>Fecha</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th>Feedback Técnico</th>
                     </tr>
-                </thead>
+                </thead>                
                 <tbody id="cerradas-body"></tbody>
             </table>
             <div id="no-cerradas" class="alert alert-info d-none">No hay incidencias cerradas.</div>

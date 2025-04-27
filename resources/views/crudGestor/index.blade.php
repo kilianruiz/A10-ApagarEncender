@@ -68,8 +68,6 @@
                             <th>Estado</th>
                             <th>Prioridad</th>
                             <th>Informador</th>
-                            <th>Categoría</th>
-                            <th>Subcategoría</th>
                             <th>Feedback</th>
                             <th>Fecha</th>
                             <th>Técnico</th>
@@ -118,8 +116,6 @@
                             <th>Estado</th>
                             <th>Prioridad</th>
                             <th>Informador</th>
-                            <th>Categoría</th>
-                            <th>Subcategoría</th>
                             <th>Feedback</th>
                             <th>Fecha</th>
                             <th>Técnico</th>
@@ -168,8 +164,6 @@
                             <th>Estado</th>
                             <th>Prioridad</th>
                             <th>Informador</th>
-                            <th>Categoría</th>
-                            <th>Subcategoría</th>
                             <th>Feedback</th>
                             <th>Fecha</th>
                             <th>Técnico</th>
@@ -218,8 +212,6 @@
                             <th>Estado</th>
                             <th>Prioridad</th>
                             <th>Informador</th>
-                            <th>Categoría</th>
-                            <th>Subcategoría</th>
                             <th>Feedback</th>
                             <th>Fecha</th>
                             <th>Técnico</th>
@@ -268,8 +260,6 @@
                             <th>Estado</th>
                             <th>Prioridad</th>
                             <th>Informador</th>
-                            <th>Categoría</th>
-                            <th>Subcategoría</th>
                             <th>Feedback</th>
                             <th>Fecha</th>
                             <th>Técnico</th>

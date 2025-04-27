@@ -119,8 +119,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${incidencia.estado}</td>
                     <td>${incidencia.prioridad || ''}</td>
                     <td>${incidencia.informador}</td>
-                    <td>${incidencia.categoria}</td>
-                    <td>${incidencia.subcategoria}</td>
                     <td>${incidencia.feedback || ''}</td>
                     <td>${new Date(incidencia.created_at).toLocaleString('es')}</td>
                     <td class="text-center">
