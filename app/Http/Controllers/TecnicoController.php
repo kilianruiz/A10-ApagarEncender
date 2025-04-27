@@ -17,35 +17,46 @@ class TecnicoController extends Controller
 
     public function getComentarios(Request $request) {
         $query = IncidenciaUsuario::where('user_id', Auth::id())
-        ->whereHas('incidencia', function($q) {
-            $q->where('estado', '!=', 'resuelta');
-        })
-        ->with('incidencia');
-    
-
-        // filtro de estado
-        if ($request->has('estado') && $request->estado !== '') {
-            $query->whereHas('incidencia', function($q) use ($request) {
-                $q->where('estado', $request->estado);
-            });
+            ->with('incidencia');
+        
+        if ($request->has('tipo') && $request->tipo) {
+            switch ($request->tipo) {
+                case 'pendientes':
+                    $query->whereHas('incidencia', function($q) {
+                        $q->where('estado', 'asignada');
+                    });
+                    break;
+                case 'en_proceso':
+                    $query->whereHas('incidencia', function($q) {
+                        $q->where('estado', 'en proceso');
+                    });
+                    break;
+                case 'resueltas':
+                    $query->whereHas('incidencia', function($q) {
+                        $q->where('estado', 'resuelta');
+                    });
+                    break;
+                case 'cerradas':
+                    $query->whereHas('incidencia', function($q) {
+                        $q->where('estado', 'cerrada');
+                    });
+                    break;
+            }
         }
-
-        // Filtro de fecha con query de hasta la fecha
+    
         if ($request->has('fecha') && $request->fecha !== '') {
             $query->whereDate('created_at', '<=', $request->fecha);
         }
-
-        $comentarios = $query->with(['incidencia'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        
-        // Filtrar resultados nulos
+    
+        $comentarios = $query->orderBy('created_at', 'desc')->get();
+    
+        // Eliminar comentarios que no tienen incidencia
         $comentarios = $comentarios->filter(function($comentario) {
             return $comentario->incidencia !== null;
         });
-        
+    
         return response()->json($comentarios->values());
-    }
+    }      
 
     public function getHistorial()
     {
